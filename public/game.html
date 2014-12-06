@@ -2,57 +2,299 @@
 <html>
 <head>
 	<title>LD31</title>	
-	<link type="text/css" rel="stylesheet" media="all" href="style.css">
-
+	<link href="css/style.css" rel="stylesheet">
+	<link href="css/jquery-ui.css" rel="stylesheet">	
 	
 	<!-- <script src="libs/pixi.js"></script> -->
-	<!-- <script src="node_modules/socket.io/lib/socket.js"></script>-->
+	<script src="socket.io/socket.io.js"></script>	
+	<script src="libs/jquery.min.js"></script>
+	<script src="libs/jquery-ui.min.js"></script>
 </head>
 <body>
-No witam :3<br/>
-<img src="art/card.jpg"/>
+<div class="templates">
+	<div class="card">		
+		<p class="name"></p>		
 
-<script src="socket.io/socket.io.js"></script>
+		<div class="card_cost">0</div>
+		
+		<div class="property life">Life: <p class="value">0</p>
+			<button class="add"></button><button class="remove"></button>
+		</div>
+
+		<div class="property attack">Attack: <p class="value">0</p>
+		<button class="add"></button><button class="remove"></button>
+		</div>
+
+		<div class="extra death_rattle">
+			<div class="list"></div>
+			<button>Add death rattle</button>
+		</div>
+
+		<div class="extra behavior">
+			<div class="list"></div>
+			<button>Add behavior</button>
+		</div>
+
+		<div class="extra shout">
+			<div class="list"></div>
+			<button>Add shout</button>
+		</div>
+
+		<div class="extra rage">
+			<div class="list"></div>
+			<button>Add rage</button>
+		</div>		
+	</div>
+</div>
+
+<div class="game">
+	<div class="game_screen create_deck">
+		<h1>Create your deck: </h1>
+		<h2>Mana points: <p class="total_mana_points"></p></h2>	
+		<button onclick="randAllStats();">Randomise</button>			
+		<div class="card_container"></div>		
+
+		<button onclick="searchForGame();">Play</button>		
+	</div>
+
+	<div class="game_screen ban_cards">	
+	</div>
+
+	<div class="game_screen play_game">	
+	</div>
+
+	<div class="modal">		
+		<div class="content"></div>
+	</div>
+</div>
+
 <script>
-  var socket = io();
-  alert("socket: "+socket)
-;</script>
+//stuff
+function shuffle(o){
+    for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
 
-<script>
 
-//var socket = require('socket.io');
-/*
-// UTILS
-function getSprite(name) {
-	var texture = PIXI.Texture.fromImage("art/"+name);
-	return new PIXI.Sprite(texture);
+//config
+var minionsExtra = 
+	[{ name : "death_rattle",
+	   arr  : 
+			[{id   : "add_lite_opponent", 
+			  name : "Add 5 life for opponent", 
+			  cost : -2}, 
+			 {id   : "change_track_chance", 
+			  name : "50% chance to switch track", 			  
+			  cost : 1}] 
+	 },
+	 { name : "behaviour",
+	   arr  : 
+			[{id   : "double_speed", 
+			  name : "Double The Speed", 
+			  cost : 2}, 
+			 {id   : "change_track_chance", 
+			  name : "50% chance to switch track", 
+			  chance : 0.5,
+			  cost : 1}]
+	 },
+	 { name : "shout",
+	   arr : 
+			[{id   : "reverse_order", 
+			  name : "Reverse order of ally minions on this track", 
+			  cost : 2}, 
+			 {id   : "reverse_order_opp", 
+			  name : "Reverse order of enemy minions on this track", 		  
+			  cost : 2}]
+	 },
+	 { name : "rage",
+	   arr : 
+			[{id   : "extra_attack", 
+			  name : "Add ", 
+			  cost : 2}, 
+			 {id   : "heal_line", 
+			  name : "If not destroyed heal all ally enemies on track by 2", 		  
+			  cost : 2}] }];
+
+var TOTAL_CARDS_NUM = 30;
+var BASIC_MANA_PER_CARD = 5;
+var TOTAL_MANA_TO_DISTRIBUTE = TOTAL_CARDS_NUM * BASIC_MANA_PER_CARD;
+var MAX_STAT = 8;
+
+var totalMana;
+
+//initing deck screen
+function randAllStats() {
+	totalMana = TOTAL_MANA_TO_DISTRIBUTE;
+	var borrow = Math.round(Math.random() * 4) - 2;
+	var numArr = [];
+	var notLessThanPerCard = 2;
+
+	for(var i = 0; i < Math.floor(TOTAL_CARDS_NUM / 2); i++) {
+		var	rVal = Math.round((BASIC_MANA_PER_CARD - notLessThanPerCard) * Math.random());
+		numArr[i] = BASIC_MANA_PER_CARD + rVal;
+		numArr[TOTAL_CARDS_NUM - i - 1] = BASIC_MANA_PER_CARD - rVal;
+	}
+	numArr = shuffle(numArr);
+
+	$(".card").each(function(i){		
+		var toWork = numArr[i - 1];
+
+		var life = Math.round(toWork * Math.random());
+		var attack = toWork - life;
+		//TODO: rand extra stuff!!
+
+		setCardProperty(this, "life", life);
+		setCardProperty(this, "attack", attack);
+		recalculateCardCost(this);
+	});
+
+	totalMana = 0;
+	updateManaDisplay();
 }
 
-// RENDER SETUP
-var DESIGN_W = 600;
-var DESIGN_H = 400;
-
-var stage = new PIXI.Stage(0xff0000);
-var renderer = PIXI.autoDetectRenderer(DESIGN_W, DESIGN_H);
-document.body.appendChild(renderer.view);
-
-var cardS = getSprite("card.jpg");
-cardS.position.x = 100;
-cardS.position.y = 100;
-cardS.width = 200;
-cardS.height = 200;
-
-stage.addChild(cardS);
-
-// MAIN LOOP
-function mainLoop() {
-	renderer.render(stage);
-
-	requestAnimFrame(mainLoop);
+function showModal(content) {
+	(".modal .content").html(content);
+	$(".modal").show();	
 }
 
-// START GAME
-requestAnimFrame(mainLoop);
-*/
+function tryToUseMana(ammount) {
+	if(totalMana - ammount < 0) return false;
+	if(totalMana - ammount > TOTAL_MANA_TO_DISTRIBUTE) return false;
+
+	totalMana -= ammount;
+	updateManaDisplay();
+	return true;
+}
+
+function updateManaDisplay() {
+	$(".total_mana_points").html(""+totalMana);
+}
+
+function recalculateCardCost(card) {
+	var life = parseInt($(".life .value", card).html());
+	var attack = parseInt($(".attack .value", card).html());
+	var costContainer = $(".card_cost", card);
+
+	var upgradeBorder = Math.ceil(BASIC_MANA_PER_CARD);
+	var cost = 0;
+	if(life < upgradeBorder &&
+	   attack < upgradeBorder) {
+		cost += Math.floor((life + attack) * 0.5);
+	}else {
+		if(life < upgradeBorder)
+			cost += Math.floor(life * 0.5);
+		else
+			cost += life;
+
+		if(attack < upgradeBorder)
+			cost += Math.floor(attack * 0.5);
+		else
+			cost += attack;
+	}
+
+	costContainer.html(""+cost);
+}
+
+function setCardProperty(card, property, value) {
+	$("."+property+" .value", card).html(value);
+}
+
+function getCardProperty(card, property) {
+	return parseInt($("."+property+" .value", card).html());
+}
+
+function addCard(){			
+	var cardTemplate = $(".templates .card").clone();		
+
+
+	$(".property", cardTemplate)
+		.each(function(){			
+			var valueContainer = $(".value", this);
+
+			var addToVal = function(ammount) {
+				
+				var value = parseInt(valueContainer.html());
+				if(value + ammount < 0) return false;
+				if(value + ammount > MAX_STAT) return false;
+
+				value += ammount;
+				valueContainer.html(""+value);
+				
+				return true;
+			};			
+
+			$("button.add", this).html("+");
+			$("button.add", this).click(function(){				
+				if(tryToUseMana(1)) {					
+					if(!addToVal(1))
+						tryToUseMana(-1);
+				}
+
+				recalculateCardCost(cardTemplate);
+			});
+
+			$("button.remove", this).html("-");
+			$("button.remove", this).click(function(){
+				if(tryToUseMana(-1))
+					if(!addToVal(-1))
+						tryToUseMana(1);
+
+				recalculateCardCost(cardTemplate);
+			});
+		});
+
+	for(var i = 0; i < minionsExtra.size; i++) {
+		var extra = minionsExtra[i];
+		
+		var addButton = $(".minion ."+extra.name+" button", cardTemplate);
+		addButton.click(function(){
+			showModal("dupa");
+		});
+	}
+
+	cardTemplate.appendTo(".game_screen .card_container");	
+}
+
+//manage screens
+function hideAllScreens() {
+	$("div.game .game_screen").each(function(){
+		$(this).hide();
+	});
+}
+
+function showCreateDeckScreen() {
+	hideAllScreens();
+	$("div.create_deck").show();
+
+	totalMana = TOTAL_MANA_TO_DISTRIBUTE;
+	updateManaDisplay();
+
+	$(".game_screen .card_container").html("");
+	for(var i = 0; i < TOTAL_CARDS_NUM; i++)
+		addCard();
+}
+
+function showBanCardsDeck() {
+	hideAllScreens();
+	$("div.ban_cards").show();
+
+
+}
+
+function showPlayGameScreen() {
+	hideAllScreens();
+	$("div.play_game").show();
+
+
+}
+
+function searchForGame() {
+
+}
+
+var socket = io();
+hideAllScreens();
+showCreateDeckScreen();  	
+
 </script></body>
 </html>

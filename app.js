@@ -77,6 +77,10 @@ io.sockets.on('connection', function(socket) {
 		}		
 	});
 
+	socket.on('reconnect', function(){
+		console.log('Reconnected'.bold.green);
+	});
+
 	socket.on('disconnect', function(){
 		console.log('User disconnected'.bold.red);
 
