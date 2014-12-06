@@ -49,12 +49,13 @@
 
 <div class="game">
 	<div class="game_screen create_deck">
-		<h1>Create your deck: </h1>
-		<h2>Mana points: <p class="total_mana_points"></p></h2>	
-		<button onclick="randAllStats();">Randomise</button>			
-		<div class="card_container"></div>		
-
-		<button onclick="searchForGame();">Play</button>		
+		<div class="header">
+			<h1>Create your deck: </h1>
+			<h2>Mana points: <p class="total_mana_points"></p></h2>	
+			<button onclick="randAllStats();">Randomise</button>			
+			<button onclick="searchForGame();">Play</button>		
+		</div>
+		<div class="card_container"></div>				
 	</div>
 
 	<div class="game_screen ban_cards">	
@@ -195,12 +196,30 @@ function recalculateCardCost(card) {
 	costContainer.html(""+cost);
 }
 
+function getCardCost(card) {
+	return parseInt($(".card_cost", card).html());	
+}
+
 function setCardProperty(card, property, value) {
 	$("."+property+" .value", card).html(value);
 }
 
 function getCardProperty(card, property) {
 	return parseInt($("."+property+" .value", card).html());
+}
+
+function serialiseCards() {
+	var cards = [];
+	$(".card").each(function(i){		
+		cards[i - 1] 
+			= {"life"   : getCardProperty(this, "life"),
+			   "attack" : getCardProperty(this, "attack"),
+			   "cost"   : getCardCost(this)};
+
+			   //TODO: add rest
+	});	
+
+	return JSON.stringify(cards);
 }
 
 function addCard(){			
@@ -289,7 +308,7 @@ function showPlayGameScreen() {
 }
 
 function searchForGame() {
-
+	alert("cards: "+serialiseCards());
 }
 
 var socket = io();
