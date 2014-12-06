@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>LD31</title>	
+	<link type="text/css" rel="stylesheet" media="all" href="style.css">
+
+	
+	<!-- <script src="libs/pixi.js"></script> -->
+	<!-- <script src="node_modules/socket.io/lib/socket.js"></script>-->
+</head>
+<body>
+No witam :3<br/>
+<img src="art/card.jpg"/>
+
+<script src="socket.io/socket.io.js"></script>
+<script>
+  var socket = io();
+  alert("socket: "+socket)
+;</script>
+
+<script>
+
+//var socket = require('socket.io');
+/*
+// UTILS
+function getSprite(name) {
+	var texture = PIXI.Texture.fromImage("art/"+name);
+	return new PIXI.Sprite(texture);
+}
+
+// RENDER SETUP
+var DESIGN_W = 600;
+var DESIGN_H = 400;
+
+var stage = new PIXI.Stage(0xff0000);
+var renderer = PIXI.autoDetectRenderer(DESIGN_W, DESIGN_H);
+document.body.appendChild(renderer.view);
+
+var cardS = getSprite("card.jpg");
+cardS.position.x = 100;
+cardS.position.y = 100;
+cardS.width = 200;
+cardS.height = 200;
+
+stage.addChild(cardS);
+
+// MAIN LOOP
+function mainLoop() {
+	renderer.render(stage);
+
+	requestAnimFrame(mainLoop);
+}
+
+// START GAME
+requestAnimFrame(mainLoop);
+*/
+</script></body>
+</html>
