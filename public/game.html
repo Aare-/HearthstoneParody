@@ -8,10 +8,13 @@
 	<!-- <script src="libs/pixi.js"></script> -->
 	<script src="socket.io/socket.io.js"></script>	
 	<script src="libs/jquery.min.js"></script>
-	<script src="libs/jquery-ui.min.js"></script>
-	<script src="libs/name.js"></script>
+	<script src="libs/jquery-ui.min.js"></script>	
 </head>
 <body>
+<div class="modal">		
+	<div class="content"></div>
+</div>
+
 <div class="templates">
 	<div class="card card_create">				
 		<img class="minion" src=""/>	
@@ -60,7 +63,7 @@
 		<div class="card_content">	
 			<p class="name"></p>		
 
-			<button onclick="banCard();">Ban</button>		
+			<button onclick="banCard(this);">Ban</button>		
 
 			<div class="cost"></div>
 			
@@ -70,10 +73,29 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="card regular_card">
+		<img class="minion" src=""/>
+		<div class="card_content">	
+			<p class="name"></p>					
+			<div class="cost"></div>			
+			<div class="stats">
+				<div class="property life">HP: <p class="value"></p></div>
+				<div class="property attack">DMG: <p class="value"></p></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="yourBannedCards">
+		<h2>Your cards banned by the opponent:</h2>
+		<div class="card_container">
+		</div>
+	</div>
 </div>
 
 <div class="game">
-<div class="game_screen welcome">	
+	<div class="game_screen welcome">	
+		<img src="art/welcome.jpg"/>
 		<h1>WELCOE TO HEART_OF_STONE BUT WITH REAL PEOPLE INSTEAD</h1>
 		<h2>ALSO YOU CAN PLAY WITH ANY CARDS YOU DESIRE</h2>
 
@@ -97,17 +119,24 @@
 	<div class="game_screen ban_cards">	
 		<div class="header">
 			<h1>BAN CARDS!</h1>
-			<h2>Left to ban: <p class="value">0</p></h2>
+			<h2>Left to ban: <p class="left_to_ban">0</p></h2>
+			<button onclick="readyToPlay();">Ready</button>		
+			<h2 class="isOpponentReady">Opponent Ready</h2>
 		</div>
 		<div class="card_container"></div>
 	</div>
 
-	<div class="game_screen play_game">	
+	<div class="game_screen starting">
+		<h1>Launching game</h1>
+		<div class="cardsContainer">
+
+		</div>
 	</div>
 
-	<div class="modal">		
-		<div class="content"></div>
-	</div>
+	<div class="game_screen play_game">	
+
+		<h1>GAMEEEE!!!</h1>
+	</div>	
 </div>
 
 <script>
@@ -163,7 +192,11 @@ var MAX_STAT = 8;
 
 var totalMana;
 
-var namesArr = [];
+var namesArr = ["Gabriel Kochheiser","Logan Fury","Pedro Kotheimer","Gerardo Baydal","Alva Caringi","Thanh Kyhn","Fritz Semmler","Nicholas Kemph","Hosea Sozio","Jackie Tiernan","Ralph Gilespie","Sydney Cabam","Hosea Melaro","Ruben Daschofsky","Saul Whitbeck","Demetrius Knaff","Jerry Spanicek","Eric Yun","Thanh Corria","Ignacio Stryker","Lenard Kishimoto","Dominick Benari","Kraig Valladao","Kasey Giddings","Clayton Buza","Ward Durette","Frederick McGhee","Wesley Millinor","Terrence Wolfrom","Darryl Younger","Tyson Benvenuti","Sebastian Matthis","Zack Wikins","Randall Stonebarger","Edmundo McNamer","Sung Schuch","Pedro Willner","Shelby Haurin","Leif Velovic","Buck Heuberger","Roger Bloss","Carson Laham","Sanford Haraldson","Romeo Schatzberg","Kelly Wims","Mohammed Ladden","Roland Tryon","Harrison Zywiec","Roy Malas","Wilbert Pinto","Erin Eshenbrenner","Vincent Noda","Barrett Ducharme","Alejandro Schoppert","Santos Derita","Jospeh Marsico","Augustine Emuka","Erin Malaney","Ward Washell","Granville Congleton","Tyree Clure","Bart Santangelo","Dalton Drury","Danilo Jarret","Adolph Salzano","Brant Vasbinder","Scottie Zych","Zachary Darsey","Jc Gershen","Bernie Benecke","Lavern McLin","Jerome Braithwaite","Rosendo Adamson","Vernon Gessford","Boyd Ganus","Edison Redhage","Glenn Voegeli","Carroll Gulati","Tyrell Konopnicki","Brain Fodor","Delmer Amarante","Dee Embertson","Tory Stapelman","Wm Bilder","Cole Brannigan","Gregory Penalosa","Rene Mayo","Vernon Woollard","Zack Bertley","Erich Roszel","Thad Slaby","Ned Willougby","Mose Edlao","Curtis Masloski","Vernon Ansell","Hank Boera","Lucio Pheonix","DeAndre Ornelos","Tobias Soga","Wesley Damboise"];
+
+//MAIN GAME VARIABLES
+var myDeck;
+var oppDeck;
 
 //initing deck screen
 function randAllStats() {
@@ -203,12 +236,7 @@ function randAllStats() {
 	});
 
 	totalMana = 0;
-	updateManaDisplay();
-}
-
-function showModal(content) {
-	(".modal .content").html(content);
-	$(".modal").show();	
+	updateManaDisplay();	
 }
 
 function tryToUseMana(ammount) {
@@ -281,8 +309,11 @@ function getDeck() {
 	var deck = [];
 	$(".create_deck .card_container .card_create").each(function(i){		
 		deck[i] 
-			= {life   : getCardProperty(this, "life"),
+			= {id     : i,
+			   life   : getCardProperty(this, "life"),
 			   attack : getCardProperty(this, "attack"),
+			   name   : getCardName(this),
+			   image  : getCardMinionImage(this),
 			   cost   : getCardCost(this)};
 
 			   //TODO: add rest
@@ -336,23 +367,53 @@ function decreaseHP(me){
 	recalculateCardCost($(me).closest(".card"));
 }
 
-function addCard(){			
-	$(".templates .card_create").clone().appendTo(".game_screen .card_container");			
+function inflateCard(container, cardType, cardData) {
+	var card = $(".templates ."+cardType).clone();
 
-/*
-	for(var i = 0; i < minionsExtra.length; i++) {
-		var extra = minionsExtra[i];
-		
-		var addButton = $(".minion ."+extra.name+" button", card);
-		addButton.click(function(){
-			showModal("dupa");
-		});
-		
-	}	*/
+	setCardName(card, cardData.name);
+	setCardMinionImage(card, cardData.image);
+	setCardProperty(card, "life", cardData.life);
+	setCardProperty(card, "attack", cardData.attack);
+	recalculateCardCost(card);
+
+	card.appendTo(container);	
 }
 
-function banCard(){
+//BANNING CARDS
 
+function setLeftToBanNumber(value) {
+	$(".left_to_ban").html(value);
+}
+
+function getLeftToBan() {
+	return parseInt($(".left_to_ban").html());
+}
+
+function unBanCard(me) {
+	var card = $(me).closest(".card");
+	setLeftToBanNumber(getLeftToBan() + 1);
+
+	$(card).css("box-shadow", "none");
+	$(card).removeClass("banned");
+
+	$(me).html("Ban");
+	$(me).unbind("click");	
+	$(me).click(function(){ banCard(me); });
+}
+
+function banCard(me) {
+	var leftToBan = getLeftToBan();
+	if(leftToBan > 0) {
+		var card = $(me).closest(".card");
+		setLeftToBanNumber(getLeftToBan() - 1);
+
+		$(card).addClass("banned");
+
+		$(me).removeAttr("onclick");
+		$(me).html("Un-Ban");
+		$(me).unbind("click");
+		$(me).click(function(){ unBanCard(me); });	
+	}
 }
 
 //manage screens
@@ -368,7 +429,7 @@ function inflateCreateDeckScreen() {
 
 	$(".game_screen .card_container").html("");
 	for(var i = 0; i < TOTAL_CARDS_NUM; i++)
-		addCard();
+		$(".templates .card_create").clone().appendTo(".game_screen .card_container");
 }
 
 function showCreateDeckScreen() {
@@ -386,21 +447,63 @@ function showSearchGame() {
 	$("div.please_wait").show();	
 }
 
+function showNonskippableModal(message) {
+	$(".modal .content").html(message);
+	$(".modal").show();	
+	$(".modal").unbind("click");
+}
+
+function showSkippableModal(message) {
+	$(".modal .content").html(message + '<button onclick="hideModal();">Close</button>');
+	$(".modal").show();	
+	$(".modal").click(hideModal);
+}
+
+function hideModal(){
+	$(".modal").hide();
+}
+
 function showBanCardsDeck(deck) {
+	oppDeck = deck;
+
 	hideAllScreens();
 	var cardsContainer = $(".ban_cards .card_container");
 	cardsContainer.html("");
 	$("div.ban_cards").show();	
 
-	for(var i = 0; i<deck.length; i++) {
-		var cardTemplate = $(".templates .card_to_ban").clone();
+	for(var i = 0; i<deck.length; i++)
+		inflateCard(cardsContainer, "card_to_ban", deck[i]);	
 
-		$(".life .value", cardTemplate).html(deck[i].life);
-		$(".attack .value", cardTemplate).html(deck[i].attack);
-		$(".cost", cardTemplate).html(deck[i].cost);
+	setLeftToBanNumber(5);
+	$(".isOpponentReady").hide();
+}
 
-		cardTemplate.appendTo(cardsContainer);	
+function showScreenLaunchingGame(){
+	hideAllScreens();
+	$("div.starting").show();		
+}
+
+function readyToPlay(){
+	if(getLeftToBan() > 0) {
+		alert("You must ban "+getLeftToBan()+" more opponent cards");
+		return;
 	}
+
+	var bannedCardsPos = [];
+	var finOppDeck = [];
+	$(".ban_cards .card_container .card")
+		.each(function(i){
+			if($(this).hasClass("banned")) {
+				bannedCardsPos.push(i);				
+			} else {
+				finOppDeck.push(oppDeck[i]);
+			}
+		});	
+
+	oppDeck = finOppDeck;
+
+	socket.emit("cardsBanned", bannedCardsPos);	
+	showNonskippableModal("<h2>WAITING FOR OPPONENT BANS...</h2>");	
 }
 
 function showPlayGameScreen() {
@@ -412,15 +515,56 @@ function showPlayGameScreen() {
 
 var socket = io();
 socket.on("gameStarted", function(deck){	
-	showBanCardsDeck(deck);
+	showBanCardsDeck(deck);	
+});
+
+socket.on("disconnect", function(){
+	showCreateDeckScreen();
+	alert("Game disconnected :(");
+});
+
+socket.on("connectionBroken", function(){
+	showCreateDeckScreen();
+	alert("Opponent disconnected");
+});
+
+socket.on("fireTheActualGame", function(list) {
+	var myFinalDeck = [];
+	var myBannedCards = [];
+
+	for(var i = 0; i < myDeck.length; i++){
+		var banned = false;
+		for(var j = 0; j < list.length; j++)
+			if(i == list[j]) {
+				myBannedCards.push(myDeck[i]);
+				banned = true;
+				break;
+			}
+		if(!banned)
+			myFinalDeck.push(myDeck[i]);
+	}
+	myDeck = myFinalDeck;
+	
+	hideModal();
+
+	showPlayGameScreen();
+	showSkippableModal("<div class='con'></div>");
+
+	var message = $(".templates .yourBannedCards").clone();
+	var container = $(message).find(".card_container");
+
+	for(var i = 0; i < myBannedCards.length; i++){
+		inflateCard(container, "regular_card", myBannedCards[i]);
+	}
+
+	$(".modal .con").append(message);
 });
 
 function searchForGame() {
 	showSearchGame();	
 
-	var deck = getDeck();	
-
-	socket.emit('searchForGame', deck);	
+	myDeck = getDeck();	
+	socket.emit('searchForGame', myDeck);	
 }
 
 hideAllScreens();
@@ -430,24 +574,11 @@ if(true){
 	inflateCreateDeckScreen();
 	randAllStats();		
 
-	showCreateDeckScreen();				
-}else {
-	var boolInited = false;
-	for(var j = 0; j < Math.ceil(TOTAL_CARDS_NUM / 5) + 1; j++)
-		namey.get({ count: 5, frequency : "rare", type : "male", with_surname : true, callback: 
-			function(n) { 
-				for(var i = 0; i < n.length; i++)
-					namesArr.push(n[i]);			
-
-				if(!boolInited && namesArr.length >= TOTAL_CARDS_NUM) {				
-					boolInited = true;
-					inflateCreateDeckScreen();
-					randAllStats();		
-
-					showCreateDeckScreen();				
-				}
-			}});
+	showCreateDeckScreen();					
 }
+
+hideModal();
+
 
 </script></body>
 </html>

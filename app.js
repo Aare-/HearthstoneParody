@@ -22,6 +22,13 @@ function Game(_room, _player1, _player2) {
 	this.player2 = _player2;
 	this.player2.game = this;
 
+	this.cardsbanned = 2;
+
+	this.getOpponent = function(player) {
+		if(this.player1 == player)
+			return this.player2;
+		return this.player1;
+	}
 }
 
 var totalGameNumber = 0;
@@ -76,11 +83,30 @@ io.sockets.on('connection', function(socket) {
 
 			player.socket.emit("gameStarted", deck);			
 			thisPlayer.socket.emit("gameStarted", player.deck);			
+
+			player.game = game;
+			thisPlayer.game = game;
 		} else {
 			console.log("Waiting for opponent...");
 
 			waitingPlayers.push(thisPlayer);
 		}		
+	});
+
+	socket.on("cardsBanned", function(list){
+		var game = thisPlayer.game;
+		var opponent = game.getOpponent(thisPlayer);
+		opponent.bannedCards = list;		
+
+		game.cardsbanned--;		
+
+		if(game.cardsbanned <= 0){
+			console.log("Both players banned cards, starting game");
+			opponent.socket.emit("fireTheActualGame", opponent.bannedCards);
+			thisPlayer.socket.emit("fireTheActualGame", thisPlayer.bannedCards);
+		}else{
+			console.log("Player ready, waiting: %d", game.cardsbanned);
+		}
 	});
 
 	socket.on('reconnect', function(){
@@ -89,6 +115,10 @@ io.sockets.on('connection', function(socket) {
 
 	socket.on('disconnect', function(){
 		console.log('User disconnected'.bold.red);
+
+		if(thisPlayer.game != null)
+			io.to(thisPlayer.game.room).emit("connectionBroken");
+		thisPlayer.game = null;
 
 		players.removeElement(thisPlayer);
 		waitingPlayers.removeElement(thisPlayer);
