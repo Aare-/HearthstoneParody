@@ -45,23 +45,86 @@ h2 {
 .card {
 	position: relative;
 	width: 250px;
-	height: 300px;
+	height: 350px;
 	background: rgba(255, 255, 255, 1.0);	
+	padding: 0px 0px;
 }
 
-.card_cost {
-	background: blue;
-	color: white;
+.card_cost {	
+	text-shadow: white 0.1em 0.1em 0.2em;
+	font-size: 20px;
+	color: rgba(0, 0, 200, 1.0);
 	position: absolute;
+	text-align: center;
+	line-height: 40px;
+	vertical-align: middle;
+	background: rgba(0, 0, 255, 0.5);
+	border-radius: 100px;
 	top: 0px;
 	right: 0px;
 	width: 40px;
 	height: 40px;
 }
 
+.card img.minion {
+	width: 250px;
+	
+	position: absolute;
+	clip: rect(100px, 100px; 100px, 0px);	
+}
+
+.card .card_content .name {
+	color: black;
+	font-size: 20px;
+	width: 190px;
+	height: 40px;
+	text-transform: uppercase;
+	font-weight: bold;
+	text-shadow: white 0.1em 0.1em 0.2em;
+	margin-top: 5px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-bottom: 80px;
+	padding: 0px 0px;
+	text-align: center;
+}
+
+.card .stats{
+	background: white;
+	margin: 0px 0px;
+}
+
+.card .life{
+	text-shadow: red 0.1em 0.1em 0.2em;
+	width: 50px;
+	display: block;
+}
+
+.card .attack {
+	text-shadow: green 0.1em 0.1em 0.2em;
+	width: 100px;
+}
+
+.card .card_content{
+	position: absolute;
+	padding: 0px 0px;
+	top: 0px;
+	left: 0px;
+}
+
 .card .property {
-	width: 100%;
-	margin-bottom: 5px;		
+	width: 117px;
+	font-size: 20px;
+	display: inline-block;
+	margin-bottom: 5px;
+	margin-left: 0px;
+	margin-right: 0px;		
+}
+
+.card .property button{
+	width: 22px;
+	height: 22px;
+	float: right;
 }
 
 .card .property p {

@@ -9,45 +9,77 @@
 	<script src="socket.io/socket.io.js"></script>	
 	<script src="libs/jquery.min.js"></script>
 	<script src="libs/jquery-ui.min.js"></script>
+	<script src="libs/name.js"></script>
 </head>
 <body>
 <div class="templates">
-	<div class="card">		
-		<p class="name"></p>		
+	<div class="card card_create">				
+		<img class="minion" src=""/>	
+		<div class="card_content">	
+			<p class="name">_blank_</p>		
 
-		<div class="card_cost">0</div>
-		
-		<div class="property life">Life: <p class="value">0</p>
-			<button class="add"></button><button class="remove"></button>
-		</div>
 
-		<div class="property attack">Attack: <p class="value">0</p>
-		<button class="add"></button><button class="remove"></button>
-		</div>
+			<div class="card_cost">0</div>
+			
+			<div class="stats">
+				<div class="property life">HP: <p class="value">0</p>
+					<button class="add" onclick="increaseHP(this);">+</button>
+					<button class="remove" onclick="decreaseHP(this);">-</button>
+				</div>
 
-		<div class="extra death_rattle">
-			<div class="list"></div>
-			<button>Add death rattle</button>
-		</div>
+				<div class="property attack">DMG: <p class="value">0</p>
+				<button class="add" onclick="increaseDMG(this);">+</button>
+				<button class="remove" onclick="decreaseDMG(this);">-</button>
+				</div>
 
-		<div class="extra behavior">
-			<div class="list"></div>
-			<button>Add behavior</button>
-		</div>
+				<div class="extra death_rattle">
+					<div class="list"></div>
+					<button>Add death rattle</button>
+				</div>
 
-		<div class="extra shout">
-			<div class="list"></div>
-			<button>Add shout</button>
-		</div>
+				<div class="extra behavior">
+					<div class="list"></div>
+					<button>Add behavior</button>
+				</div>
 
-		<div class="extra rage">
-			<div class="list"></div>
-			<button>Add rage</button>
+				<div class="extra shout">
+					<div class="list"></div>
+					<button>Add shout</button>
+				</div>
+
+				<div class="extra rage">
+					<div class="list"></div>
+					<button>Add rage</button>
+				</div>
+			</div>
 		</div>		
+	</div>
+
+	<div class="card card_to_ban">
+		<img class="minion" src=""/>
+		<div class="card_content">	
+			<p class="name"></p>		
+
+			<button onclick="banCard();">Ban</button>		
+
+			<div class="cost"></div>
+			
+			<div class="stats">
+				<div class="property life">HP: <p class="value"></p></div>
+				<div class="property attack">DMG: <p class="value"></p></div>
+			</div>
+		</div>
 	</div>
 </div>
 
 <div class="game">
+<div class="game_screen welcome">	
+		<h1>WELCOE TO HEART_OF_STONE BUT WITH REAL PEOPLE INSTEAD</h1>
+		<h2>ALSO YOU CAN PLAY WITH ANY CARDS YOU DESIRE</h2>
+
+		<h3>PREPARING THE GAME...</h3>
+	</div>
+
 	<div class="game_screen create_deck">
 		<div class="header">
 			<h1>Create your deck: </h1>
@@ -58,7 +90,16 @@
 		<div class="card_container"></div>				
 	</div>
 
+	<div class="game_screen please_wait">	
+		<h1>SEARCHING FOR OPPONENT!</h1>
+	</div>
+
 	<div class="game_screen ban_cards">	
+		<div class="header">
+			<h1>BAN CARDS!</h1>
+			<h2>Left to ban: <p class="value">0</p></h2>
+		</div>
+		<div class="card_container"></div>
 	</div>
 
 	<div class="game_screen play_game">	
@@ -75,7 +116,6 @@ function shuffle(o){
     for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 };
-
 
 //config
 var minionsExtra = 
@@ -123,11 +163,17 @@ var MAX_STAT = 8;
 
 var totalMana;
 
+var namesArr = [];
+
 //initing deck screen
 function randAllStats() {
+	var avatars = [];
+	for(var i = 0; i <31; i++)
+		avatars[i] = "art/card_minions/min_"+i+".jpg";
+	avatars = shuffle(avatars);
 	totalMana = TOTAL_MANA_TO_DISTRIBUTE;
 	var borrow = Math.round(Math.random() * 4) - 2;
-	var numArr = [];
+	var numArr = [];	
 	var notLessThanPerCard = 2;
 
 	for(var i = 0; i < Math.floor(TOTAL_CARDS_NUM / 2); i++) {
@@ -136,8 +182,10 @@ function randAllStats() {
 		numArr[TOTAL_CARDS_NUM - i - 1] = BASIC_MANA_PER_CARD - rVal;
 	}
 	numArr = shuffle(numArr);
+	if(namesArr.length > 0)
+		namesArr = shuffle(namesArr);
 
-	$(".card").each(function(i){		
+	$(".card_create").each(function(i){		
 		var toWork = numArr[i - 1];
 
 		var life = Math.round(toWork * Math.random());
@@ -146,6 +194,11 @@ function randAllStats() {
 
 		setCardProperty(this, "life", life);
 		setCardProperty(this, "attack", attack);
+		setCardMinionImage(this, avatars[i % avatars.length]);
+		if(namesArr.length > 0){
+			setCardName(this, namesArr[i % namesArr.length]);
+		}
+
 		recalculateCardCost(this);
 	});
 
@@ -200,78 +253,106 @@ function getCardCost(card) {
 	return parseInt($(".card_cost", card).html());	
 }
 
+function setCardName(card, name) {
+	return $(".name", card).html(name);
+}
+
+function getCardName(card) {
+	return $(".name", card).html();
+}
+
+function setCardMinionImage(card, image) {
+	$("img.minion", card).attr("src", image);
+}
+
+function getCardMinionImage(card) {
+	return $("img.minion", card).attr("src");
+}
+
 function setCardProperty(card, property, value) {
-	$("."+property+" .value", card).html(value);
+	$(card).find("."+property+" .value").html(value);
 }
 
 function getCardProperty(card, property) {
-	return parseInt($("."+property+" .value", card).html());
+	return parseInt($(card).find("."+property+" .value").html());
 }
 
-function serialiseCards() {
-	var cards = [];
-	$(".card").each(function(i){		
-		cards[i - 1] 
-			= {"life"   : getCardProperty(this, "life"),
-			   "attack" : getCardProperty(this, "attack"),
-			   "cost"   : getCardCost(this)};
+function getDeck() {
+	var deck = [];
+	$(".create_deck .card_container .card_create").each(function(i){		
+		deck[i] 
+			= {life   : getCardProperty(this, "life"),
+			   attack : getCardProperty(this, "attack"),
+			   cost   : getCardCost(this)};
 
 			   //TODO: add rest
 	});	
 
-	return JSON.stringify(cards);
+	return deck;
+}
+
+function addToVal(card, name, ammount) {				
+	var value = getCardProperty(card, name);	
+	console.log("addToVal "+name+" "+ammount+" val: "+value);
+
+	if(value + ammount < 0) return false;
+	if(value + ammount > MAX_STAT) return false;
+
+	value += ammount;
+	setCardProperty(card, name, value)
+	
+	return true;
+};
+
+function increaseDMG(me){
+	if(tryToUseMana(1))						
+		if(!addToVal($(me).closest(".card"), "attack", 1))
+			tryToUseMana(-1);
+
+	recalculateCardCost($(me).closest(".card"));
+}
+
+function decreaseDMG(me){
+	if(tryToUseMana(-1)) 						
+		if(!addToVal($(me).closest(".card"), "attack", -1))
+			tryToUseMana(1);
+
+	recalculateCardCost($(me).closest(".card"));
+}
+
+function increaseHP(me){
+	if(tryToUseMana(1))						
+		if(!addToVal($(me).closest(".card"), "life", 1))
+			tryToUseMana(-1);
+
+	recalculateCardCost($(me).closest(".card"));
+}
+
+function decreaseHP(me){
+	if(tryToUseMana(-1))						
+		if(!addToVal($(me).closest(".card"), "life", -1))
+			tryToUseMana(1);
+
+	recalculateCardCost($(me).closest(".card"));
 }
 
 function addCard(){			
-	var cardTemplate = $(".templates .card").clone();		
+	$(".templates .card_create").clone().appendTo(".game_screen .card_container");			
 
-
-	$(".property", cardTemplate)
-		.each(function(){			
-			var valueContainer = $(".value", this);
-
-			var addToVal = function(ammount) {
-				
-				var value = parseInt(valueContainer.html());
-				if(value + ammount < 0) return false;
-				if(value + ammount > MAX_STAT) return false;
-
-				value += ammount;
-				valueContainer.html(""+value);
-				
-				return true;
-			};			
-
-			$("button.add", this).html("+");
-			$("button.add", this).click(function(){				
-				if(tryToUseMana(1)) {					
-					if(!addToVal(1))
-						tryToUseMana(-1);
-				}
-
-				recalculateCardCost(cardTemplate);
-			});
-
-			$("button.remove", this).html("-");
-			$("button.remove", this).click(function(){
-				if(tryToUseMana(-1))
-					if(!addToVal(-1))
-						tryToUseMana(1);
-
-				recalculateCardCost(cardTemplate);
-			});
-		});
-
-	for(var i = 0; i < minionsExtra.size; i++) {
+/*
+	for(var i = 0; i < minionsExtra.length; i++) {
 		var extra = minionsExtra[i];
 		
-		var addButton = $(".minion ."+extra.name+" button", cardTemplate);
+		var addButton = $(".minion ."+extra.name+" button", card);
 		addButton.click(function(){
 			showModal("dupa");
 		});
-	}
+		
+	}	*/
+}
 
-	cardTemplate.appendTo(".game_screen .card_container");	
+function banCard(){
+
 }
 
 //manage screens
@@ -281,10 +362,7 @@ function hideAllScreens() {
 	});
 }
 
-function showCreateDeckScreen() {
-	hideAllScreens();
-	$("div.create_deck").show();
-
+function inflateCreateDeckScreen() {
 	totalMana = TOTAL_MANA_TO_DISTRIBUTE;
 	updateManaDisplay();
 
@@ -293,11 +371,36 @@ function showCreateDeckScreen() {
 		addCard();
 }
 
-function showBanCardsDeck() {
+function showCreateDeckScreen() {
 	hideAllScreens();
-	$("div.ban_cards").show();
+	$("div.create_deck").show();	
+}
 
+function showWelcomeScreen() {
+	hideAllScreens();
+	$("div.welcome").show();	
+}
 
+function showSearchGame() {
+	hideAllScreens();
+	$("div.please_wait").show();	
+}
+
+function showBanCardsDeck(deck) {
+	hideAllScreens();
+	var cardsContainer = $(".ban_cards .card_container");
+	cardsContainer.html("");
+	$("div.ban_cards").show();	
+
+	for(var i = 0; i<deck.length; i++) {
+		var cardTemplate = $(".templates .card_to_ban").clone();
+
+		$(".life .value", cardTemplate).html(deck[i].life);
+		$(".attack .value", cardTemplate).html(deck[i].attack);
+		$(".cost", cardTemplate).html(deck[i].cost);
+
+		cardTemplate.appendTo(cardsContainer);	
+	}
 }
 
 function showPlayGameScreen() {
@@ -307,13 +410,44 @@ function showPlayGameScreen() {
 
 }
 
+var socket = io();
+socket.on("gameStarted", function(deck){	
+	showBanCardsDeck(deck);
+});
+
 function searchForGame() {
-	alert("cards: "+serialiseCards());
+	showSearchGame();	
+
+	var deck = getDeck();	
+
+	socket.emit('searchForGame', deck);	
 }
 
-var socket = io();
 hideAllScreens();
-showCreateDeckScreen();  	
+showWelcomeScreen();
+
+if(true){
+	inflateCreateDeckScreen();
+	randAllStats();		
+
+	showCreateDeckScreen();				
+}else {
+	var boolInited = false;
+	for(var j = 0; j < Math.ceil(TOTAL_CARDS_NUM / 5) + 1; j++)
+		namey.get({ count: 5, frequency : "rare", type : "male", with_surname : true, callback: 
+			function(n) { 
+				for(var i = 0; i < n.length; i++)
+					namesArr.push(n[i]);			
+
+				if(!boolInited && namesArr.length >= TOTAL_CARDS_NUM) {				
+					boolInited = true;
+					inflateCreateDeckScreen();
+					randAllStats();		
+
+					showCreateDeckScreen();				
+				}
+			}});
+}
 
 </script></body>
 </html>

@@ -7,10 +7,6 @@ Array.prototype.removeElement = function(element) {
 
 
 // model
-function Card(_name, _cost) {	
-	this.name = _name;
-	this.cost = _cost;
-}
 
 function Player(_socket) {
 	this.socket = _socket;
@@ -63,17 +59,27 @@ io.sockets.on('connection', function(socket) {
 	var thisPlayer = new Player(socket);
 	players.push(thisPlayer);
 
-	socket.on('searchForGame', function(){				
-		if(waitingPlayers.size() > 0) {
+	socket.on('searchForGame', function(deck){										
+		players.removeElement(thisPlayer);
+		thisPlayer.deck = deck;
+
+
+		if(waitingPlayers.length > 0) {
+			console.log("Found opponent, starting game".bold.green);
+
 			var player = waitingPlayers.pop();
+
 			var game = new Game("game_"+(totalGameNumber++), thisPlayer, player);
 
 			player.socket.join(game.room);
 			thisPlayer.socket.join(game.room);
 
-			io.socket.in(game.room).emit("gameStarted", {oponent : player});			
+			player.socket.emit("gameStarted", deck);			
+			thisPlayer.socket.emit("gameStarted", player.deck);			
 		} else {
-			waitingPlayers.push(player1);
+			console.log("Waiting for opponent...");
+
+			waitingPlayers.push(thisPlayer);
 		}		
 	});
 
