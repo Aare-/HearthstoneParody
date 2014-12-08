@@ -17,6 +17,13 @@
 	<div class="content"></div>
 </div>
 
+<div class="modal_alert">		
+	<div class="content">
+		<center><div class="message"></div></center>
+		<center><button onclick="hideModalAlert();"></button></center>
+	</div>
+</div>
+
 <div class="templates">
 	<div class="card card_create">				
 		<img class="minion" src=""/>	
@@ -93,15 +100,19 @@
 	</div>
 
 	<div class="yourBannedCards">
-		<h2>Your cards banned by the opponent:</h2>
-		<div class="card_container">
+		<center><h2>Your cards banned by the opponent:</h2></center>
+		<div style="width: 600px; overflow: auto;">
+		<div class="card_container" style="height: 100px; width: 1000px;">
+		</div>
 		</div>
 	</div>
 
 	<div class="chooseStartingCards">
-		<h2>Choose cards to discard, or click OK:</h2>
-		<button onclick="prepareFinalStartingHand();">OK</button>
-		<div class="card_container">
+		<center><h2>Choose cards to discard, or click OK:</h2>
+		<button style="padding: 10px 10px;" onclick="prepareFinalStartingHand();">OK</button></center>
+		<div style="width: 600px; overflow: auto;">
+		<div class="card_container" style="height: 100px; width: 1000px;">
+		</div>
 		</div>
 	</div>
 
@@ -119,8 +130,8 @@
 
 <div class="game">
 	<div class="game_screen intro_screen">				
-		<h1>WELCOME TO HEART-STOCK.IMG CORP. SIMULATOR 2014</h1>
-		<h2>IT'S YEAR 2001 AND YOUR GOAL IS TO CLIMB TO THE VERY TOP OF THE CORPORATE LADDER.<br/>ASSEMBLE BEST CREW AND DOMINATE THE OFFICE</h2>				
+		<center><h1>xxx_HEART_STOCK_IMG_xxx CORP IS HIRING!</h1>
+		<h2>IT'S YEAR 2001 AND YOUR GOAL IS TO CLIMB TO THE VERY TOP OF THE CORPORATE LADDER.<br/>ASSEMBLE BEST CREW AND DOMINATE THE FINANCIAL JUNGLE</h2>				</center>
 
 		<center>
 		<button onclick="
@@ -131,18 +142,18 @@
 		</center>
 
 		<center style="color: white;">
-		<h5>@FilipLoster 2014</h5>
-		<h6>LD31 "Entire game on One Screen" - not seeing connection to the theme? Try to open game in second screen :3</h6>
+		<h5><a href="https://twitter.com/filiploster" target="_blank" style="color: white;">@FilipLoster 2014</a></h5>
+		<h5><a href="http://subfty.com"  target="_blank" style="color: white;">subfty.com</a></h5>
+		<h6>LD31 "Entire game on One Screen"</h6>
 		</center>
 	</div>
 
 	<div class="game_screen create_deck horisontal_cards_disp">
 		<div class="header">
 			<center><h1>TWEAK YOUR EMPLOYEES, AVALIABLE SKILL POINTS: <b style="color: blue;" class="total_mana_points"></b></h1></center>
-			<button onclick="randAllStats();" class="big">Randomise</button>			
-			<button onclick="searchForGame();" class="big">Play Wth Stranger</button>	
-			Room: <input type="text" />
-			<button onclick="searchForGameInLobby();" class="big">Play With Friend</button>	
+			<button onclick="randAllStats();" class="big">Randomise</button>									
+			<button onclick="searchForGame();" class="big">Play</button>	
+			Game tag(optional): <input type="text" class="roomNameInput"/>
 		</div>
 		<div class="wrapper">
 			<div class="card_container"></div>				
@@ -250,6 +261,20 @@ var totalMana;
 
 var namesArr = ["Gabriel Kochheiser","Logan Fury","Pedro Kotheimer","Gerardo Baydal","Alva Caringi","Thanh Kyhn","Fritz Semmler","Nicholas Kemph","Hosea Sozio","Jackie Tiernan","Ralph Gilespie","Sydney Cabam","Hosea Melaro","Ruben Daschofsky","Saul Whitbeck","Demetrius Knaff","Jerry Spanicek","Eric Yun","Thanh Corria","Ignacio Stryker","Lenard Kishimoto","Dominick Benari","Kraig Valladao","Kasey Giddings","Clayton Buza","Ward Durette","Frederick McGhee","Wesley Millinor","Terrence Wolfrom","Darryl Younger","Tyson Benvenuti","Sebastian Matthis","Zack Wikins","Randall Stonebarger","Edmundo McNamer","Sung Schuch","Pedro Willner","Shelby Haurin","Leif Velovic","Buck Heuberger","Roger Bloss","Carson Laham","Sanford Haraldson","Romeo Schatzberg","Kelly Wims","Mohammed Ladden","Roland Tryon","Harrison Zywiec","Roy Malas","Wilbert Pinto","Erin Eshenbrenner","Vincent Noda","Barrett Ducharme","Alejandro Schoppert","Santos Derita","Jospeh Marsico","Augustine Emuka","Erin Malaney","Ward Washell","Granville Congleton","Tyree Clure","Bart Santangelo","Dalton Drury","Danilo Jarret","Adolph Salzano","Brant Vasbinder","Scottie Zych","Zachary Darsey","Jc Gershen","Bernie Benecke","Lavern McLin","Jerome Braithwaite","Rosendo Adamson","Vernon Gessford","Boyd Ganus","Edison Redhage","Glenn Voegeli","Carroll Gulati","Tyrell Konopnicki","Brain Fodor","Delmer Amarante","Dee Embertson","Tory Stapelman","Wm Bilder","Cole Brannigan","Gregory Penalosa","Rene Mayo","Vernon Woollard","Zack Bertley","Erich Roszel","Thad Slaby","Ned Willougby","Mose Edlao","Curtis Masloski","Vernon Ansell","Hank Boera","Lucio Pheonix","DeAndre Ornelos","Tobias Soga","Wesley Damboise"];
 
+//LOADING MUSIC
+var toosad = document.createElement('audio');
+toosad.setAttribute('src', 'sounds/2SAD4ME.mp3');
+var airhorn = document.createElement('audio');
+airhorn.setAttribute('src', 'sounds/AIRHORN.mp3');
+var hit = document.createElement('audio');
+hit.setAttribute('src', 'sounds/HITMARKER.mp3');
+var boom = document.createElement('audio');
+boom.setAttribute('src', 'sounds/boom.mp3');
+var scary = document.createElement('audio');
+scary.setAttribute('src', 'sounds/scary.mp3');
+var spooky = document.createElement('audio');
+spooky.setAttribute('src', 'sounds/SPOOKY.mp3');
+
 //MAIN GAME VARIABLES
 var myDeck;
 var myHand;
@@ -260,6 +285,30 @@ var totalManaCrist = 0;
 var myId;
 
 //initing deck screen
+var funcToDoStd = null;
+function showModalAlert(message, ok) {
+	funcToDoStd = null;
+	$(".modal_alert .message").html(message);
+	$(".modal_alert button").html(ok);
+	$(".modal_alert").show();
+}
+
+function showModalAlertActionAfter(message, ok, action) {
+	funcToDoStd = action;	
+	$(".modal_alert .message").html(message);
+	$(".modal_alert button").html(ok);
+	$(".modal_alert").show();
+}
+
+function hideModalAlert(){
+	if(funcToDoStd != null)
+		funcToDoStd();
+	funcToDoStd = null;
+	$(".modal_alert").hide();
+}
+
+hideModalAlert();
+
 function randAllStats() {
 	var avatars = [];
 	for(var i = 0; i <31; i++)
@@ -388,9 +437,9 @@ function getDeck() {
 }
 
 function addToVal(card, name, ammount) {				
-	var value = getCardProperty(card, name);	
-	console.log("addToVal "+name+" "+ammount+" val: "+value);
+	var value = getCardProperty(card, name);		
 
+	if(name == "life" && value + ammount < 1) return false;	
 	if(value + ammount < 0) return false;	
 
 	value += ammount;
@@ -587,18 +636,37 @@ function spawnMinionToken(board, minionData) {
 
 function killMinionToken(token) {
 	if($(token).hasClass("player")){
-		if($(token).hasClass("player_me")){
-			alert("YOU LOOSE!");
-		}else{
-			alert("YOU WON!");
-		}
-		
-		//TODO: leave room!!!
-		//socket.leave(myRoom);
-		showWelcomeScreen();
-	}else{
-		//TODO: animation
+		if($(token).hasClass("player_me")){			
+			toosad.play();		
+			
+			showModalAlertActionAfter("<center>I CAN'T BELIVE THIS!!! HOW COULD I WITH MY MAD SKILLS LOSE TO THIS not_so_brilliant_player ?!</br>I'M GONNA WRITE TO THE AUTOR OF THIS STUPID PIECE OF CRAP TO LET HIM KNOW:</br><ul><li>HOW MUCH HE SUCKS FOR CREATING THIS SHITTY GAME</li><li>HE IS A TERRIBLE DEV, NO SKILLS, HIS GAME IS BUGGY AS HELL AND BORRING</li><li>I COULD EASILLY WRITE BETTER GAME IN A WEEKEND</li><li>THIS GAME HAS STOLEN MY GIRLFRIEND, CRASHED MY COMPUTER AND KILLED MY PET. EXTREAMLY DISSAPOINTED! 1/5</li></ul><textarea cols='60' rows='10'></textarea></center>", 
+					"SUBMIT", 
+					showCreateDeckScreen);
+			
+			
+		}else{			
+			scary.play();
+			showModalAlertActionAfter("<center>YOU M80 HAS REKT THE OPONENT!<br/>WHAT A MAD SKILLS!</center>", 
+					"( ͡° ͜ʖ ͡°)", 
+					showCreateDeckScreen);			
+
+		}		
+
+		socket.emit("gameFinished");
+
+		return false;
+	}else{		
+		$(".board").append("<img style='position: absolute; left: "+$(token).position().left+"px; top: "+$(token).position().top+"px;' src='art/explode.gif'/>");
+		var explosion = $(".board img").last();
+		var removeExp = function(){
+			$(explosion).remove();
+		};
+		setTimeout(removeExp, 500);
+		boom.play();
+
+
 		$(token).remove();
+		return true;
 	}
 }
 
@@ -642,6 +710,7 @@ function inflateCreateDeckScreen() {
 
 function showCreateDeckScreen() {
 	hideAllScreens();
+	$(".roomNameInput").val("");
 	$("div.create_deck").show();	
 }
 
@@ -769,7 +838,8 @@ function prepareFinalStartingHand(){
 
 function readyToPlay(){
 	if(getLeftToBan() > 0) {
-		alert("You must ban "+getLeftToBan()+" more opponent cards");
+		showModalAlert("You must ban "+getLeftToBan()+" more opponent cards", "OK");
+		
 		return;
 	}
 
@@ -853,13 +923,15 @@ socket.on("gameStarted", function(data){
 socket.on("disconnect", function(){
 	hideModal();
 	showCreateDeckScreen();
-	alert("Game disconnected :(");
+	showNonskippableModal("<center>Disconnected from server :(</center>");	
+	spooky.play();
 });
 
 socket.on("connectionBroken", function(){
 	hideModal();
 	showCreateDeckScreen();
-	alert("Opponent disconnected");
+	showModalAlert("Oponent disconnected", "OK");
+	spooky.play();
 });
 
 socket.on("nextRound", function(data) {	
@@ -886,7 +958,7 @@ socket.on("nextRound", function(data) {
 		setUsedManaCrist(0);
 
 		$(".turn").show();	
-		$(".turn").css('transform', 'scale(0,0)');
+		$(".turn").css('transform', 'scale(0,0)');		
 		$(".turn").animate({transform: 'scale(3,3)'}, 1500, "easeOutQuart",
 			function(){
 				$(".turn").animate({transform: 'scale(0,0)'}, 500, "easeInCubic",
@@ -895,7 +967,7 @@ socket.on("nextRound", function(data) {
 					});		
 			});
 		
-		//TODO: show modal, next round!!!
+		airhorn.play();
 	}
 
 	//PERFORMING ACTIONS		
@@ -958,47 +1030,50 @@ socket.on("nextRound", function(data) {
 					vec = new Victor(origAgX, origAgY);
 				}
 			}else{
-				//TODO: alert?!
-				//alert("not found "+target.name);
-				vec = new Victor(origAgX, origAgY);
+				
 			}
 		}
 
-		$(agressor).addClass("activeMinionTocken");
+		if(vec == null)
+			performAction(i + 1);
+		else {
+			$(agressor).addClass("activeMinionTocken");
 
-		$(agressor).animate(
-			{
-			  left : vec.x,
-			  top  : vec.y
-			}, 400, "easeInBack", 
-			 function(){
+			$(agressor).animate(
+				{
+				  left : vec.x,
+				  top  : vec.y
+				}, 400, "easeInBack", 
+				 function(){
+					hit.play();
 
-			 	//perform hit
-			 	var targetLife = getMinionTokenParam(target, targetLifeName) - getMinionTokenParam(agressor, "attack");
-				var agressorLife = getMinionTokenParam(agressor, "life") - getMinionTokenParam(target, "attack");				
+				 	//perform hit
+				 	var targetLife = getMinionTokenParam(target, targetLifeName) - getMinionTokenParam(agressor, "attack");
+					var agressorLife = getMinionTokenParam(agressor, "life") - getMinionTokenParam(target, "attack");				
 
-				if(targetLife <= 0)
-					killMinionToken(target);
-				else
-					setMinionTokenParam(target, targetLifeName, targetLife);
-				
-				if(agressorLife <= 0)
-					killMinionToken(agressor);
-				else
-					setMinionTokenParam(agressor, "life", agressorLife);		
+					if(targetLife <= 0)
+						killMinionToken(target);
+					else
+						setMinionTokenParam(target, targetLifeName, targetLife);
+					
+					if(agressorLife <= 0)
+						killMinionToken(agressor);
+					else
+						setMinionTokenParam(agressor, "life", agressorLife);		
+					
 
+				 	$(agressor).animate(
+					 	{
+					 		left : origAgX,
+					 		top  : origAgY	
+					 	}, 500, "easeOutQuint",
+					 	function(){
+					 		$(agressor).removeClass("activeMinionTocken");
+					 		performAction(i + 1);
+					 	});
 
-			 	$(agressor).animate(
-				 	{
-				 		left : origAgX,
-				 		top  : origAgY	
-				 	}, 500, "easeOutQuint",
-				 	function(){
-				 		$(agressor).removeClass("activeMinionTocken");
-				 		performAction(i + 1);
-				 	});
-
-			 });	
+				 });
+		}			
 	}
 
 	performAction(0);	
@@ -1065,20 +1140,24 @@ socket.on("fireTheActualGame", function(list) {
 
 	$(".ready_n_round").addClass("green");
 	$(".ready_n_round").click(readyForNextRound);
+
+	airhorn.play();
 });
 }
 
 function searchForGame() {
-	showNonskippableModal("<h1>Searching for opponent</h1>");
+	showNonskippableModal("<center>Searching for opponent</center>");
 
 	myDeck = getDeck();	
-	socket.emit('searchForGame', myDeck);	
+	socket.emit('searchForGame', 
+				{deck : myDeck, 
+				 room : $(".roomNameInput").val().length > 0 ? $(".roomNameInput").val() : null});	
 }
 
 
 $(".turn").hide();
 
-if(true) {
+if(false) {
 	inflateCreateDeckScreen();
 	randAllStats();		
 
