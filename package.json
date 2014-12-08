@@ -3,6 +3,7 @@
   "description": "LD31 game made by me",
   "version": "0.0.1",
   "dependencies": {
+    "victor" : ">= 0.0.1",
     "express": "~3.2.6",    
     "pixi.js": ">= 0.0.1",
     "socket.io": ">= 0.0.1",
