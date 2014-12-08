@@ -21,7 +21,6 @@
 		<div class="card_content">	
 			<p class="name">_blank_</p>		
 
-
 			<div class="card_cost">0</div>
 			
 			<div class="stats">
@@ -33,14 +32,16 @@
 				<div class="property attack">DMG: <p class="value">0</p>
 				<button class="add" onclick="increaseDMG(this);">+</button>
 				<button class="remove" onclick="decreaseDMG(this);">-</button>
-				</div>
+				</div>				
 
-				<div class="extra death_rattle">
-					<div class="list"></div>
-					<button>Add death rattle</button>
+				<!-- 
+				<div class="extra death_rattle">					
+					<p></p>
+					<button>Add tount</button>
 				</div>
+				-->
 
-				<div class="extra behavior">
+				<!--<div class="extra behavior">
 					<div class="list"></div>
 					<button>Add behavior</button>
 				</div>
@@ -53,7 +54,7 @@
 				<div class="extra rage">
 					<div class="list"></div>
 					<button>Add rage</button>
-				</div>
+				</div>-->
 			</div>
 		</div>		
 	</div>
@@ -63,7 +64,9 @@
 		<div class="card_content">	
 			<p class="name"></p>		
 
-			<button onclick="banCard(this);">Ban</button>		
+			<div class="card_cost">0</div>
+
+			<button onclick="banCard(this);" style="width: 100px; height: 50px; position: relative; left: 40px;">FIRE!</button>		
 
 			<div class="cost"></div>
 			
@@ -74,8 +77,9 @@
 		</div>
 	</div>
 
-	<div class="card regular_card">
+	<div class="card regular_card">		
 		<img class="minion" src=""/>
+		<div class="card_cost">0</div>
 		<div class="card_content">	
 			<p class="name"></p>					
 			<div class="cost"></div>			
@@ -91,39 +95,68 @@
 		<div class="card_container">
 		</div>
 	</div>
+
+	<div class="chooseStartingCards">
+		<h2>Choose cards to discard, or click OK:</h2>
+		<button onclick="prepareFinalStartingHand();">OK</button>
+		<div class="card_container">
+		</div>
+	</div>
+
+	<div class="minionToken">
+		<img class="awatar"/>
+		<div class="life"></div>
+		<div class="attack"></div>		
+	</div>
+
+	<div class="cardBack">
+	</div>
 </div>
 
+<img src="art/table.png" class="table"/>
+
 <div class="game">
-	<div class="game_screen welcome">	
-		<img src="art/welcome.jpg"/>
-		<h1>WELCOE TO HEART_OF_STONE BUT WITH REAL PEOPLE INSTEAD</h1>
-		<h2>ALSO YOU CAN PLAY WITH ANY CARDS YOU DESIRE</h2>
+	<div class="game_screen intro_screen">				
+		<h1>WELCOME TO HEART-STOCK.IMG CORP. SIMULATOR 2014</h1>
+		<h2>IT'S YEAR 2001 AND YOUR GOAL IS TO CLIMB TO THE VERY TOP OF THE CORPORATE LADDER.<br/>ASSEMBLE BEST CREW AND DOMINATE THE OFFICE</h2>				
 
-		<h3>PREPARING THE GAME...</h3>
+		<center>
+		<button onclick="
+		inflateCreateDeckScreen();
+		randAllStats();		
+		showCreateDeckScreen();	" 
+		style="width: 200px; height: 100px; font-size: 15px;">PLAY</button>
+		</center>
+
+		<center style="color: white;">
+		<h5>@FilipLoster 2014</h5>
+		<h6>LD31 "Entire game on One Screen" - not seeing connection to the theme? Try to open game in second screen :3</h6>
+		</center>
 	</div>
 
-	<div class="game_screen create_deck">
+	<div class="game_screen create_deck horisontal_cards_disp">
 		<div class="header">
-			<h1>Create your deck: </h1>
-			<h2>Mana points: <p class="total_mana_points"></p></h2>	
-			<button onclick="randAllStats();">Randomise</button>			
-			<button onclick="searchForGame();">Play</button>		
+			<center><h1>ASSEMBLE YOUR COMPANY STUFF, AVALIABLE MONEY: <b style="color: blue;" class="total_mana_points"></b></h1></center>
+			<button onclick="randAllStats();" class="big">Randomise</button>			
+			<button onclick="searchForGame();" class="big">Play Wth Stranger</button>	
+			Room: <input type="text" />
+			<button onclick="searchForGameInLobby();" class="big">Play With Friend</button>	
 		</div>
-		<div class="card_container"></div>				
+		<div class="wrapper">
+			<div class="card_container"></div>				
+		</div>
 	</div>
 
-	<div class="game_screen please_wait">	
-		<h1>SEARCHING FOR OPPONENT!</h1>
-	</div>
-
-	<div class="game_screen ban_cards">	
+	<div class="game_screen ban_cards horisontal_cards_disp">	
 		<div class="header">
-			<h1>BAN CARDS!</h1>
-			<h2>Left to ban: <p class="left_to_ban">0</p></h2>
-			<button onclick="readyToPlay();">Ready</button>		
+			<center><h1>FIRE 5 OF YOUR OPONENT EMPLOYEES: <b class="left_to_ban" style="color: red;">0</b> LEFT </h1></center>		
+			<button onclick="randBan();" class="big">RANDOM</button>
+			<button onclick="readyToPlay();" class="big">READY</button>		
 			<h2 class="isOpponentReady">Opponent Ready</h2>
 		</div>
+		<div class="wrapper">
 		<div class="card_container"></div>
+		</div>
 	</div>
 
 	<div class="game_screen starting">
@@ -134,12 +167,28 @@
 	</div>
 
 	<div class="game_screen play_game">	
-
-		<h1>GAMEEEE!!!</h1>
+		<img class="board_image_bg" src="art/board.png"/>
+		<div class="board">	
+		</div>	
+		<div class="player player_oponent">
+			<div class="life lifeCircleLol">31</div>
+			<div class="mana_container"><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div></div>
+			<div class="cards cards_container"></div>
+		</div>
+		<div class="player player_me">
+			<div class="life lifeCircleLol">31</div>
+			<div class="mana_container"><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div></div>
+			<div class="cards cards_container"></div>
+		</div>		
+		<button class="ready ready_n_round">READY</button>		
 	</div>	
 </div>
 
 <script>
+
+hideAllScreens();
+hideModal();
+
 //stuff
 function shuffle(o){
     for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
@@ -148,7 +197,7 @@ function shuffle(o){
 
 //config
 var minionsExtra = 
-	[{ name : "death_rattle",
+	[{ name : "tount",
 	   arr  : 
 			[{id   : "add_lite_opponent", 
 			  name : "Add 5 life for opponent", 
@@ -156,7 +205,7 @@ var minionsExtra =
 			 {id   : "change_track_chance", 
 			  name : "50% chance to switch track", 			  
 			  cost : 1}] 
-	 },
+	 }/*,
 	 { name : "behaviour",
 	   arr  : 
 			[{id   : "double_speed", 
@@ -183,10 +232,12 @@ var minionsExtra =
 			  cost : 2}, 
 			 {id   : "heal_line", 
 			  name : "If not destroyed heal all ally enemies on track by 2", 		  
-			  cost : 2}] }];
+			  cost : 2}] }*/
+			  ];
 
 var TOTAL_CARDS_NUM = 30;
 var BASIC_MANA_PER_CARD = 5;
+var START_CARD_NUM = 5;
 var TOTAL_MANA_TO_DISTRIBUTE = TOTAL_CARDS_NUM * BASIC_MANA_PER_CARD;
 var MAX_STAT = 8;
 
@@ -196,7 +247,11 @@ var namesArr = ["Gabriel Kochheiser","Logan Fury","Pedro Kotheimer","Gerardo Bay
 
 //MAIN GAME VARIABLES
 var myDeck;
+var myHand;
 var oppDeck;
+var usedManaCrist = 0;
+var totalManaCrist = 0;
+var myId;
 
 //initing deck screen
 function randAllStats() {
@@ -222,6 +277,8 @@ function randAllStats() {
 		var toWork = numArr[i - 1];
 
 		var life = Math.round(toWork * Math.random());
+		if(life <= 0)
+			life = 1;
 		var attack = toWork - life;
 		//TODO: rand extra stuff!!
 
@@ -273,6 +330,8 @@ function recalculateCardCost(card) {
 		else
 			cost += attack;
 	}
+
+	cost = Math.max(cost, 1);
 
 	costContainer.html(""+cost);
 }
@@ -326,8 +385,7 @@ function addToVal(card, name, ammount) {
 	var value = getCardProperty(card, name);	
 	console.log("addToVal "+name+" "+ammount+" val: "+value);
 
-	if(value + ammount < 0) return false;
-	if(value + ammount > MAX_STAT) return false;
+	if(value + ammount < 0) return false;	
 
 	value += ammount;
 	setCardProperty(card, name, value)
@@ -381,6 +439,19 @@ function inflateCard(container, cardType, cardData) {
 
 //BANNING CARDS
 
+function randBan() {
+	var arr = [];
+	for(var i = 0; i < TOTAL_CARDS_NUM; i++){
+		arr.push(i);
+		unBanCard($(".ban_cards .card_container .card:eq("+arr[i]+") button"));
+	}
+	arr = shuffle(arr);
+
+	for(var i = 0; i < 5; i++)
+		banCard($(".ban_cards .card_container .card:eq("+arr[i]+") button"));
+	setLeftToBanNumber(0);
+}
+
 function setLeftToBanNumber(value) {
 	$(".left_to_ban").html(value);
 }
@@ -396,7 +467,7 @@ function unBanCard(me) {
 	$(card).css("box-shadow", "none");
 	$(card).removeClass("banned");
 
-	$(me).html("Ban");
+	$(me).html("FIRE");
 	$(me).unbind("click");	
 	$(me).click(function(){ banCard(me); });
 }
@@ -410,10 +481,119 @@ function banCard(me) {
 		$(card).addClass("banned");
 
 		$(me).removeAttr("onclick");
-		$(me).html("Un-Ban");
+		$(me).html("HIRE");
 		$(me).unbind("click");
 		$(me).click(function(){ unBanCard(me); });	
 	}
+}
+
+// ACTUAL GAME
+
+function setActiveManaDisp(val){
+	totalManaCrist = val;
+	if(totalManaCrist > 10)
+		totalManaCrist = 10;	
+
+	$(".player_me .mana_container .mana").each(function(i){
+		if(i < totalManaCrist)
+			$(this).addClass("active");
+		else
+			$(this).removeClass("active");
+	});
+
+	$(".player_oponent .mana_container .mana").each(function(i){
+		if(i < totalManaCrist)
+			$(this).addClass("active");
+		else
+			$(this).removeClass("active");
+	});
+}
+
+function setUsedManaCrist(val){
+	usedManaCrist = val;
+
+	$(".player_me").find(".mana").each(function(i){
+		if(i < totalManaCrist - usedManaCrist)
+			$(this).addClass("free");
+		else
+			$(this).removeClass("free");
+	});
+}
+
+function setMinionTokenImage(minion, image) {	
+	$(minion).find("img").attr("src", image);
+}
+
+function getMinionTokenImage(minion) {
+	return $(minion).find("img").attr("src");
+}
+
+function getMinionTokenParam(minion, param) {
+	return parseInt($(minion).find("."+param).html());
+}
+
+function getBaseMinionTokenParam(minion, param) {
+	return parseInt($(minion).find("."+param).attr("start"));
+}
+
+function setMinionTokenParam(minion, param, value) {	
+	$(minion).find("."+param).html(value);		
+}
+
+function setMinionTokenBaseParam(minion, param, value) {
+	$(minion).find("."+param).attr("start", value);
+}
+
+function setMinionPosition(minion, x, y) {
+	$(minion).css({
+		position : "absolute",
+		top: y,
+		left: x
+	});
+}
+
+function spawnMinionToken(board, minionData) {	
+	var minion = $(".templates .minionToken").clone();	
+
+	setMinionTokenParam(minion, "life", minionData.life);
+	setMinionTokenBaseParam(minion, "life", minionData.life);
+
+	setMinionTokenParam(minion, "attack", minionData.attack);
+	setMinionTokenBaseParam(minion, "attack", minionData.attack);	
+
+	setMinionTokenImage(minion, minionData.image);	
+
+	$(minion).appendTo(board);	
+	$(minion).data("player", minionData.player);
+	$(minion).data("name", minionData.name);
+
+	var counter0 = 0;
+	var counter1 = 0;
+
+	$(board).find(".minionToken").each(function(){
+			var isMyMinion = ($(this).data("player") == myId);			
+			setMinionPosition(this, 
+							  (isMyMinion ? ++counter0 : ++counter1) * 110 -120, 
+							  (isMyMinion ? 200 : 90));
+		});
+		
+}
+
+function attack(minion, target) {
+	setMinionParam(target, "life", getMinionParam(target, "life") - getMinionParam(minion, "attack"));
+	setMinionParam(minion, "life", getMinionParam(minion, "life") - getMinionParam(target, "attack"));
+
+	if(getMinionParam(minion, "life") <= 0)
+		kill(minion);
+	if(getMinionParam(target, "life") <= 0)
+		kill(target);	
+}
+
+function kill(minion) {
+	//TODO: implement death rattles
+	//if($(minion).attr("death_rattle") == "")
+
+	$(minion).remove();
 }
 
 //manage screens
@@ -421,6 +601,11 @@ function hideAllScreens() {
 	$("div.game .game_screen").each(function(){
 		$(this).hide();
 	});
+}
+
+function showIntroScreen() {
+	hideAllScreens();
+	$("div.intro_screen").show();	
 }
 
 function inflateCreateDeckScreen() {
@@ -442,11 +627,6 @@ function showWelcomeScreen() {
 	$("div.welcome").show();	
 }
 
-function showSearchGame() {
-	hideAllScreens();
-	$("div.please_wait").show();	
-}
-
 function showNonskippableModal(message) {
 	$(".modal .content").html(message);
 	$(".modal").show();	
@@ -459,6 +639,19 @@ function showSkippableModal(message) {
 	$(".modal").click(hideModal);
 }
 
+function showSkippableModalWithCallback(message, callback) {
+	var callFunc = function(){		
+		hideModal();
+		callback();
+	};
+
+	$(".modal .content").html(message + '<button">Close</button>');
+	$(".modal").show();	
+
+	$(".modal .content button").click(callFunc);
+	$(".modal").click(callFunc);	
+}
+
 function hideModal(){
 	$(".modal").hide();
 }
@@ -467,6 +660,8 @@ function showBanCardsDeck(deck) {
 	oppDeck = deck;
 
 	hideAllScreens();
+	hideModal();
+
 	var cardsContainer = $(".ban_cards .card_container");
 	cardsContainer.html("");
 	$("div.ban_cards").show();	
@@ -481,6 +676,72 @@ function showBanCardsDeck(deck) {
 function showScreenLaunchingGame(){
 	hideAllScreens();
 	$("div.starting").show();		
+}
+
+function getCardPosByName(arr, name) {
+	for(var i = 0; i < arr.length; i++)
+		if(arr[i].name == name)
+			return i;
+	return -1; 
+}
+
+function moveCardToHand(pos){
+	var card = myDeck[pos];
+	myHand.push(card);
+	myDeck.splice(pos, 1);
+
+	inflateCard($(".player_me .cards_container"), "regular_card", card);	
+
+	var lastCardAddedToHand = $(".player_me .cards_container .card").last();
+
+	lastCardAddedToHand.off("click");
+	lastCardAddedToHand.click(function(){	
+		if($(this).hasClass("selectedToPlay")){
+			setUsedManaCrist(usedManaCrist - getCardCost($(this)));
+			$(this).removeClass("selectedToPlay");
+		} else {
+			if((totalManaCrist - usedManaCrist) >= getCardCost($(this))){
+				setUsedManaCrist(usedManaCrist + getCardCost($(this)));
+				$(this).addClass("selectedToPlay");
+			}
+		}
+	});
+
+	var ang = 15.0;
+	var tr = 600.0 - 200;
+
+	var degAdd = ang / myHand.length;
+	var translBy = tr / myHand.length;
+
+	$(".player_me .cards_container .card").each(function(i){
+		$(this).css({"transform" : 
+					 	"translate("+(400 - i * translBy)+"px, 100px)"});
+	});
+}
+
+function prepareFinalStartingHand(){
+	myHand = [];	
+	
+	$(".modal .con .card").each(function(i){		
+		if(!$(this).hasClass("banned")) {
+
+			var searchName = getCardName($(this));			
+
+			for(var pos = 0; pos < myDeck.length; pos++)
+				if(myDeck[pos].name == searchName){
+					moveCardToHand(pos);
+					break;
+				}					
+		}		
+	});
+
+	myDeck = shuffle(myDeck);	
+
+	while(myHand.length < START_CARD_NUM){
+		moveCardToHand(0);		
+	}
+	
+	hideModal();
 }
 
 function readyToPlay(){
@@ -506,26 +767,102 @@ function readyToPlay(){
 	showNonskippableModal("<h2>WAITING FOR OPPONENT BANS...</h2>");	
 }
 
+function readyForNextRound(){	
+	$(".ready_n_round").removeClass("green");
+	$(".ready_n_round").unbind("click");	
+
+	var myMinions = [];
+	var playedCards = 0;
+	$(".player_me .cards_container .card").each(function(){
+
+		if($(this).hasClass("selectedToPlay")){
+			var name = getCardName($(this));			
+
+			var i = 0;
+			for(i = 0; i < myHand.length; i++)
+				if(myHand[i].name == name){
+					break;
+				}
+			var card = myHand[i];			
+			myHand.splice(i, 1);
+						
+			playedCards++;
+			myMinions.push({player : myId,
+							image  : card.image,
+							name   : card.name,
+							life   : card.life,
+							attack : card.attack});
+
+			$(this).remove();			
+		}
+	});		
+
+	for(var i = 0; i < Math.min(myDeck.length, playedCards); i++)
+		moveCardToHand(Math.floor(Math.random() * myDeck.length));		
+
+	$(".board .minionToken").each(function(){		
+		if($(this).data("player") == myId) {			
+			myMinions.push({player : myId,
+							name   : $(this).data("name"),						
+							image  : getMinionTokenImage($(this)),
+							life   : getMinionTokenParam($(this), "life"),
+							attack : getMinionTokenParam($(this), "attack")});
+		}
+	});	
+
+	socket.emit("game_action_ready", myMinions);		
+}
+
 function showPlayGameScreen() {
 	hideAllScreens();
 	$("div.play_game").show();
-
-
 }
 
 var socket = io();
-socket.on("gameStarted", function(deck){	
-	showBanCardsDeck(deck);	
+
+if(socket != null) {
+socket.on("gameStarted", function(data){	
+	myId = data.myId;
+	showBanCardsDeck(data.deck);	
 });
 
 socket.on("disconnect", function(){
+	hideModal();
 	showCreateDeckScreen();
 	alert("Game disconnected :(");
 });
 
 socket.on("connectionBroken", function(){
+	hideModal();
 	showCreateDeckScreen();
 	alert("Opponent disconnected");
+});
+
+socket.on("nextRound", function(data) {	
+	var myBoard = data.player0;
+	var opBoard = data.player1;
+	var actionsLog = data.actionsLog;
+
+	if(myId == opBoard.id)
+		opBoard = [myBoard, myBoard = opBoard][0];
+
+	$(".board").html("");
+	for(var i = 0; i < myBoard.minions.length; i++)
+		spawnMinionToken(".board", myBoard.minions[i]);		
+	for(var i = 0; i < opBoard.minions.length; i++)
+		spawnMinionToken(".board", opBoard.minions[i]);		
+
+	//TODO: perform actions from log!!!
+	
+
+	setActiveManaDisp(totalManaCrist + 1);	
+	setUsedManaCrist(0);
+	
+	$(".ready_n_round").addClass("green");
+	$(".ready_n_round").click(readyForNextRound);
+
+	setUsedManaCrist(0);	
+	//TODO: show modal, next round!!!
 });
 
 socket.on("fireTheActualGame", function(list) {
@@ -543,42 +880,73 @@ socket.on("fireTheActualGame", function(list) {
 		if(!banned)
 			myFinalDeck.push(myDeck[i]);
 	}
-	myDeck = myFinalDeck;
+	myDeck = myFinalDeck;	
 	
 	hideModal();
 
 	showPlayGameScreen();
-	showSkippableModal("<div class='con'></div>");
+	showSkippableModalWithCallback("<div class='con'></div>",
+		function(){
+			
+			showNonskippableModal("<div class='con'></div>");
+
+			var message = $(".templates .chooseStartingCards").clone();
+			var container = $(message).find(".card_container");
+
+			myDeck = shuffle(myDeck);
+			for(var i = 0; i < START_CARD_NUM; i++)
+				inflateCard(container, "regular_card", myDeck[i]);	
+
+			$(".modal .con").append(message);			
+
+			$(".modal .con .card").each(function(i){
+				$(this).click(function(){
+					if($(this).hasClass("banned"))
+						$(this).removeClass("banned");
+					else
+						$(this).addClass("banned");
+				});
+			});
+
+		});
 
 	var message = $(".templates .yourBannedCards").clone();
 	var container = $(message).find(".card_container");
 
-	for(var i = 0; i < myBannedCards.length; i++){
-		inflateCard(container, "regular_card", myBannedCards[i]);
-	}
+	for(var i = 0; i < myBannedCards.length; i++)
+		inflateCard(container, "regular_card", myBannedCards[i]);	
 
 	$(".modal .con").append(message);
+	
+	setActiveManaDisp(totalManaCrist + 1);	
+	setUsedManaCrist(0);
+
+	setMinionTokenParam($(".player_me"), "life", 30);
+	setMinionTokenParam($(".player_oponent"), "life", 30);
+
+	$(".ready_n_round").addClass("green");
+	$(".ready_n_round").click(readyForNextRound);
 });
+}
 
 function searchForGame() {
-	showSearchGame();	
+	showNonskippableModal("<h1>Searching for opponent</h1>");
 
 	myDeck = getDeck();	
 	socket.emit('searchForGame', myDeck);	
 }
 
-hideAllScreens();
+
 showWelcomeScreen();
 
-if(true){
+if(true) {
 	inflateCreateDeckScreen();
 	randAllStats();		
 
 	showCreateDeckScreen();					
+}else{
+	showIntroScreen();					
 }
-
-hideModal();
-
 
 </script></body>
 </html>

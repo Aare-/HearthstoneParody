@@ -1,8 +1,11 @@
 body {
 	margin: 0;
 	padding: 0;
-	background-color: #000000;	
+	background-image: url("../art/background.jpg");	
+	background-attachment: fixed;
+    background-position: center; 
 	color: #000000;
+	font-family: "Comic Sans MS";
 }
 
 div.templates {
@@ -17,13 +20,24 @@ h2 {
 	color: blue;
 }
 
+.horisontal_cards_disp .wrapper{
+	overflow: auto;
+	width: 1000px;
+}
+
+.horisontal_cards_disp .wrapper .card_container {
+	height: 540px;
+	width: 3000px;
+	max-height: 540;
+}
+
 /* window */
 .game_screen {
+	display: none;
 	margin: 0px auto;
 	position: relative;
 	width: 90%;
-	min-height: 500px;
-	background: rgba(255, 255, 255, 0.1);
+	min-height: 500px;	
 }
 
 /* create deck */
@@ -31,8 +45,14 @@ h2 {
 	margin: 0px auto;
 	position: relative;
 	width: 90%;	
-	min-height: 300px;	
-	background: rgba(255, 255, 255, 0.1);		
+	min-height: 300px;		
+}
+
+.cardBack {
+	width: 150px;
+	height: 209px;
+	background-image: url("art/card_back.png");
+	background-position: center;
 }
 
 .card_container div {	
@@ -40,13 +60,25 @@ h2 {
 	margin: 5px 5px;
 }
 
+header p {
+	margin: 0px 0px;
+	padding: 0px 0px;
+	display: inline-block;
+}
+
 /* card */
+
+button.big {
+	padding: 10px 5px;
+}
 
 .card {
 	position: relative;
-	width: 250px;
-	height: 350px;
-	background: rgba(255, 255, 255, 1.0);	
+	width: 190px;
+	height: 250px;
+	background-image: url("../art/card.png");
+	background-position: center;
+	background-repeat: no-repeat;
 	padding: 0px 0px;
 }
 
@@ -55,14 +87,14 @@ h2 {
 }
 
 .card_cost {	
-	text-shadow: white 0.1em 0.1em 0.2em;
+	text-shadow: rgba(141, 44, 245, 1.0) 0.1em 0.1em 0.2em;
 	font-size: 20px;
-	color: rgba(0, 0, 200, 1.0);
+	color: rgba(231, 133, 255, 1.0);
 	position: absolute;
 	text-align: center;
 	line-height: 40px;
 	vertical-align: middle;
-	background: rgba(0, 0, 255, 0.5);
+	background: rgba(87, 45, 194, 0.8);
 	border-radius: 100px;
 	top: 0px;
 	right: 0px;
@@ -71,22 +103,22 @@ h2 {
 }
 
 .card img.minion {
-	width: 250px;
-	
-	position: absolute;
-	clip: rect(100px, 100px; 100px, 0px);	
+	width: 140px;
+	left: 25px;
+	top: 20px;
+	position: absolute;	
 }
 
 .card .card_content .name {
 	color: black;
-	font-size: 20px;
-	width: 190px;
+	font-size: 15px;
+	width: 120px;
 	height: 40px;
 	text-transform: uppercase;
 	font-weight: bold;
 	text-shadow: white 0.1em 0.1em 0.2em;
-	margin-top: 5px;
-	margin-left: 0px;
+	margin-top: 15px;
+	margin-left: 15px;
 	margin-right: 0px;
 	margin-bottom: 80px;
 	padding: 0px 0px;
@@ -94,8 +126,13 @@ h2 {
 }
 
 .card .stats{
-	background: white;
+	
 	margin: 0px 0px;
+}
+
+.regular_card .stats {
+	text-align: right;
+	margin-right: 25px;
 }
 
 .card .life{
@@ -120,8 +157,9 @@ h2 {
 	width: 117px;
 	font-size: 20px;
 	display: inline-block;
-	margin-bottom: 5px;
-	margin-left: 0px;
+	margin-top: -10px;
+	margin-bottom: 0px;
+	margin-left: 25px;
 	margin-right: 0px;		
 }
 
@@ -140,6 +178,7 @@ h2 {
 .card .extra {
 	width: 100%;
 	margin-bottom: 5px;
+	margin-left: 30px;
 }
 
 /* modal */
@@ -156,4 +195,200 @@ h2 {
 	min-height: 300px;
 	margin: 50px auto;
 	background: rgba(255, 255, 255, 0.9);
+}
+
+/** GAME ITSELF */
+.play_game {
+	position: relative;
+	top: 50px;
+	width: 800px;
+	height: 600px;
+}
+
+.board_image_bg{
+	position: absolute;
+	top: -25px;
+	left: -125px;
+}
+
+.play_game .board {
+	width: 800px;
+	height: 405px;	
+	position: absolute;
+	top: 100px;
+}
+
+.play_game .board div {
+	width: 800px;
+	height: 200px;
+}
+
+.play_game .ready {
+	width: 100px;
+	height: 50px;
+	position: absolute;
+	right: 0px;
+	top: 275px;
+}
+
+/** PLAYER **/
+.player {
+	width: 600px;
+	height: 50px;	
+	position: absolute;	
+}
+
+.player .mana_container {	
+	height: 50px;
+	position: absolute;
+}
+
+.player .mana_container .mana {
+	width: 10px;
+	height: 10px;
+	display: inline-block;	
+	margin-right: 5px;
+	background: #BBC4C9;
+	transform: rotate(45deg);
+}
+
+.player_me .mana_container .active {
+	background: white;	
+	border: 1px solid blue;	
+}
+
+.player_me .mana_container .free {
+	background: #0487DE;
+	border: 1px solid blue;	
+}
+
+.player_oponent .mana_container .active {
+	background: #0487DE;
+	border: 1px solid blue;		
+}
+
+img.table {
+	position: fixed;
+	left: 50%;
+	top: 120px;
+	margin-left: -634px;
+}
+
+.player .lifeCircleLol {
+	color: #C72810;
+	font-size: 30px;
+	width: 100px;
+	height: 100px;
+	border-radius: 100px;
+	position: absolute;	
+	text-align: center;
+	vertical-align: middle;
+	left: 250px;
+	line-height: 90px;
+}
+
+.player_me {	
+	bottom: 25px;
+	left: 100px;
+	background: #C3DEC9;
+}
+
+.player_me .cards_container {	
+	width: 800px;
+}
+
+.player_me .mana_container {
+	right: 0px;
+	top: 10px;
+}
+
+.player_me .lifeCircleLol {
+	background: #97DEA5;	
+	top: -25px;
+}
+
+.player_oponent {			
+	top: 0px;	
+	left: 100px;
+	background: #DEC7C3;
+}
+
+.player_me .cards_container .card {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+
+.player_me .cards_container .selectedToPlay {
+	display: inline-block;			
+	top: -50px;	
+}
+
+.player_oponent .mana_container {
+	left: 5px;
+	top: 10px;
+}
+
+.player_oponent .lifeCircleLol {
+	background: #D18ADE;
+	right: 50px;
+	top: -20px;
+}
+
+/** MINIONS */
+
+div.minionToken {
+	width: 80px;
+	max-width: 80px;
+	height: 80px;
+	max-height: 80px;	
+	position: relative;		
+}
+
+div.minionToken .awatar {
+	width: 80px;
+	height: 80px;
+	border-radius: 100px;
+	border: 3px solid #D398F5;
+}
+
+div.minionToken .life {
+	font-size: 20px;
+	color: #F01616;
+	position: absolute;
+	left: -5px;
+	bottom: -5px;
+	width: 25px;
+	height: 30px;
+	line-height: 30px;
+	vertical-align: middle;
+	text-align: center;
+	border-radius: 100px;
+	border: 2px solid #F01616;
+	background: #FA6686;
+}
+
+div.minionToken .attack {
+	font-size: 20px;
+	color: #036600;
+	position: absolute;
+	right: -5px;
+	bottom: -5px;
+	width: 25px;
+	height: 30px;
+	line-height: 30px;
+	vertical-align: middle;
+	text-align: center;
+	border-radius: 100px;
+	border: 2px solid #036600;
+	background: #9CB35F;
+} 
+
+.green {
+	background: #C4CCAF;
+}
+
+.intro_screen {
+	position: relative;
+	top: 180px;
 }
