@@ -356,7 +356,7 @@ div.minionToken .life {
 	font-size: 20px;
 	color: #F01616;
 	position: absolute;
-	left: -5px;
+	right: -5px;
 	bottom: -5px;
 	width: 25px;
 	height: 30px;
@@ -368,11 +368,15 @@ div.minionToken .life {
 	background: #FA6686;
 }
 
+.activeMinionTocken {
+	z-index: 6;
+}
+
 div.minionToken .attack {
 	font-size: 20px;
-	color: #036600;
+	color: #FFBD2E;
 	position: absolute;
-	right: -5px;
+	left: -5px;
 	bottom: -5px;
 	width: 25px;
 	height: 30px;
@@ -380,8 +384,8 @@ div.minionToken .attack {
 	vertical-align: middle;
 	text-align: center;
 	border-radius: 100px;
-	border: 2px solid #036600;
-	background: #9CB35F;
+	border: 2px solid #FFBD2E;
+	background: #FFEF94;
 } 
 
 .green {
@@ -391,4 +395,19 @@ div.minionToken .attack {
 .intro_screen {
 	position: relative;
 	top: 180px;
+}
+
+.create_deck{
+	width: 1000px;	
+}
+
+.ban_cards{
+	width: 1000px;	
+}
+
+.turn {
+	position: fixed;
+	left: 50%;
+	top: 300px;
+	margin-left: -200px;	
 }

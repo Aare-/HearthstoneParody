@@ -8,7 +8,9 @@
 	<!-- <script src="libs/pixi.js"></script> -->
 	<script src="socket.io/socket.io.js"></script>	
 	<script src="libs/jquery.min.js"></script>
+	<script src="libs/victor.js"></script>
 	<script src="libs/jquery-ui.min.js"></script>	
+	<script src="libs/jquery.transform2d.js"></script>
 </head>
 <body>
 <div class="modal">		
@@ -136,7 +138,7 @@
 
 	<div class="game_screen create_deck horisontal_cards_disp">
 		<div class="header">
-			<center><h1>ASSEMBLE YOUR COMPANY STUFF, AVALIABLE MONEY: <b style="color: blue;" class="total_mana_points"></b></h1></center>
+			<center><h1>TWEAK YOUR EMPLOYEES, AVALIABLE SKILL POINTS: <b style="color: blue;" class="total_mana_points"></b></h1></center>
 			<button onclick="randAllStats();" class="big">Randomise</button>			
 			<button onclick="searchForGame();" class="big">Play Wth Stranger</button>	
 			Room: <input type="text" />
@@ -172,15 +174,18 @@
 		</div>	
 		<div class="player player_oponent">
 			<div class="life lifeCircleLol">31</div>
+			<div class="attack" style="display: none;">0</div>
 			<div class="mana_container"><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div></div>
 			<div class="cards cards_container"></div>
 		</div>
 		<div class="player player_me">
 			<div class="life lifeCircleLol">31</div>
+			<div class="attack" style="display: none;">0</div>
 			<div class="mana_container"><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div><div class="mana"></div></div>
 			<div class="cards cards_container"></div>
 		</div>		
-		<button class="ready ready_n_round">READY</button>		
+		<button class="ready ready_n_round">READY</button>
+		<img src="art/turn.png" class="turn"/>		
 	</div>	
 </div>
 
@@ -248,6 +253,7 @@ var namesArr = ["Gabriel Kochheiser","Logan Fury","Pedro Kotheimer","Gerardo Bay
 //MAIN GAME VARIABLES
 var myDeck;
 var myHand;
+var myRoom;
 var oppDeck;
 var usedManaCrist = 0;
 var totalManaCrist = 0;
@@ -536,7 +542,7 @@ function getBaseMinionTokenParam(minion, param) {
 	return parseInt($(minion).find("."+param).attr("start"));
 }
 
-function setMinionTokenParam(minion, param, value) {	
+function setMinionTokenParam(minion, param, value) {		
 	$(minion).find("."+param).html(value);		
 }
 
@@ -577,6 +583,23 @@ function spawnMinionToken(board, minionData) {
 							  (isMyMinion ? 200 : 90));
 		});
 		
+}
+
+function killMinionToken(token) {
+	if($(token).hasClass("player")){
+		if($(token).hasClass("player_me")){
+			alert("YOU LOOSE!");
+		}else{
+			alert("YOU WON!");
+		}
+		
+		//TODO: leave room!!!
+		//socket.leave(myRoom);
+		showWelcomeScreen();
+	}else{
+		//TODO: animation
+		$(token).remove();
+	}
 }
 
 function attack(minion, target) {
@@ -822,7 +845,8 @@ var socket = io();
 
 if(socket != null) {
 socket.on("gameStarted", function(data){	
-	myId = data.myId;
+	myId = data.myId;	
+	myRoom = data.roomName;
 	showBanCardsDeck(data.deck);	
 });
 
@@ -852,17 +876,132 @@ socket.on("nextRound", function(data) {
 	for(var i = 0; i < opBoard.minions.length; i++)
 		spawnMinionToken(".board", opBoard.minions[i]);		
 
-	//TODO: perform actions from log!!!
-	
+	function commitNewRound(){
+		setActiveManaDisp(totalManaCrist + 1);	
+		setUsedManaCrist(0);
+		
+		$(".ready_n_round").addClass("green");
+		$(".ready_n_round").click(readyForNextRound);
 
-	setActiveManaDisp(totalManaCrist + 1);	
-	setUsedManaCrist(0);
-	
-	$(".ready_n_round").addClass("green");
-	$(".ready_n_round").click(readyForNextRound);
+		setUsedManaCrist(0);
 
-	setUsedManaCrist(0);	
-	//TODO: show modal, next round!!!
+		$(".turn").show();	
+		$(".turn").css('transform', 'scale(0,0)');
+		$(".turn").animate({transform: 'scale(3,3)'}, 1500, "easeOutQuart",
+			function(){
+				$(".turn").animate({transform: 'scale(0,0)'}, 500, "easeInCubic",
+					function(){
+						$(".turn").hide();
+					});		
+			});
+		
+		//TODO: show modal, next round!!!
+	}
+
+	//PERFORMING ACTIONS		
+
+	function performAction(i) {
+		if(i >= actionsLog.length){
+			commitNewRound();
+		 	return;
+		}
+
+		var agressor = actionsLog[i].agressor;
+		var target = actionsLog[i].target;	
+		var targetLifeName = "life";	
+
+		$(".board .minionToken").each(function(){
+			if($(this).data("name") == agressor.name && $(this).data("player") == agressor.player) {
+				agressor = $(this);				
+				return false;
+			}
+		});
+
+		var targetIdOp = 0;
+		var foundByName = false;
+		var wasSearchingForMinion = false;
+		if(target == null) {
+			if(actionsLog[i].agressor.player == myId){
+				target = $(".player_oponent");
+				targetIdOp = 1;
+			} else {				
+				target = $(".player_me");
+				targetIdOp = 2;
+			}
+			targetLifeName = "lifeCircleLol";
+		} else {
+			wasSearchingForMinion = true;
+			$(".board .minionToken").each(function(){
+				if($(this).data("name") == target.name && $(this).data("player") == target.player) {
+					target = $(this);					
+					foundByName = true;
+					return false;
+				}
+			});
+		}
+	
+		var origAgX = $(agressor).position().left;
+		var origAgY = $(agressor).position().top;				
+
+		var vec = null;
+		if(targetIdOp == 1)
+			vec = new Victor(300, 0);
+		else if(targetIdOp == 2)
+			vec = new Victor(300, 360);
+		else {
+			if(wasSearchingForMinion && foundByName){
+				var targPos = $(target).position();
+				if(targPos != undefined){
+					vec = new Victor(targPos.left - origAgX, targPos.top - origAgY);		
+					vec = new Victor(vec.length() - 60.0, 0).rotateBy(vec.angle()).add(new Victor(origAgX, origAgY));		
+				}else {
+					vec = new Victor(origAgX, origAgY);
+				}
+			}else{
+				//TODO: alert?!
+				//alert("not found "+target.name);
+				vec = new Victor(origAgX, origAgY);
+			}
+		}
+
+		$(agressor).addClass("activeMinionTocken");
+
+		$(agressor).animate(
+			{
+			  left : vec.x,
+			  top  : vec.y
+			}, 400, "easeInBack", 
+			 function(){
+
+			 	//perform hit
+			 	var targetLife = getMinionTokenParam(target, targetLifeName) - getMinionTokenParam(agressor, "attack");
+				var agressorLife = getMinionTokenParam(agressor, "life") - getMinionTokenParam(target, "attack");				
+
+				if(targetLife <= 0)
+					killMinionToken(target);
+				else
+					setMinionTokenParam(target, targetLifeName, targetLife);
+				
+				if(agressorLife <= 0)
+					killMinionToken(agressor);
+				else
+					setMinionTokenParam(agressor, "life", agressorLife);		
+
+
+			 	$(agressor).animate(
+				 	{
+				 		left : origAgX,
+				 		top  : origAgY	
+				 	}, 500, "easeOutQuint",
+				 	function(){
+				 		$(agressor).removeClass("activeMinionTocken");
+				 		performAction(i + 1);
+				 	});
+
+			 });	
+	}
+
+	performAction(0);	
 });
 
 socket.on("fireTheActualGame", function(list) {
@@ -937,7 +1076,7 @@ function searchForGame() {
 }
 
 
-showWelcomeScreen();
+$(".turn").hide();
 
 if(true) {
 	inflateCreateDeckScreen();
