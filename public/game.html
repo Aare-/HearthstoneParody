@@ -183,6 +183,11 @@
 		<img class="board_image_bg" src="art/board.png"/>
 		<div class="board">	
 		</div>	
+		<div onclick="loominarti(this);" style='width: 60px; height: 60px; background: transparent; position: absolute; top: 70px; left: 50px;'></div>
+		<div onclick="loominarti(this);" style='width: 50px; height: 50px; background: transparent; position: absolute; top: 400px; left: -75px;'></div>
+		<div onclick="loominarti(this);" style='width: 50px; height: 50px; background: transparent; position: absolute; top: 500px; left: 700px;'></div>
+		<div onclick="loominarti(this);" style='width: 50px; height: 50px; background: transparent; position: absolute; top: 160px; left: 850px;'></div>
+		<div onclick="loominarti(this);" style='width: 50px; height: 50px; background: transparent; position: absolute; top: 80px; left: 600px;'></div>
 		<div class="player player_oponent">
 			<div class="life lifeCircleLol">31</div>
 			<div class="attack" style="display: none;">0</div>
@@ -272,6 +277,8 @@ var boom = document.createElement('audio');
 boom.setAttribute('src', 'sounds/boom.mp3');
 var scary = document.createElement('audio');
 scary.setAttribute('src', 'sounds/scary.mp3');
+var none = document.createElement('audio');
+none.setAttribute('src', 'sounds/none.mp3');
 var spooky = document.createElement('audio');
 spooky.setAttribute('src', 'sounds/SPOOKY.mp3');
 
@@ -653,8 +660,9 @@ function killMinionToken(token) {
 		}		
 
 		socket.emit("gameFinished");
+		myHand = [];		
 
-		return false;
+		return true;
 	}else{		
 		$(".board").append("<img style='position: absolute; left: "+$(token).position().left+"px; top: "+$(token).position().top+"px;' src='art/explode.gif'/>");
 		var explosion = $(".board img").last();
@@ -666,7 +674,7 @@ function killMinionToken(token) {
 
 
 		$(token).remove();
-		return true;
+		return false;
 	}
 }
 
@@ -918,20 +926,25 @@ socket.on("gameStarted", function(data){
 	myId = data.myId;	
 	myRoom = data.roomName;
 	showBanCardsDeck(data.deck);	
+	$(".board").html("");
+
+	totalManaCrist = 0;
+	setActiveManaDisp(totalManaCrist + 1);	
+	setUsedManaCrist(0);
 });
 
 socket.on("disconnect", function(){
 	hideModal();
 	showCreateDeckScreen();
 	showNonskippableModal("<center>Disconnected from server :(</center>");	
-	spooky.play();
+	none.play();
 });
 
 socket.on("connectionBroken", function(){
 	hideModal();
 	showCreateDeckScreen();
 	showModalAlert("Oponent disconnected", "OK");
-	spooky.play();
+	none.play();
 });
 
 socket.on("nextRound", function(data) {	
@@ -1051,26 +1064,29 @@ socket.on("nextRound", function(data) {
 				 	var targetLife = getMinionTokenParam(target, targetLifeName) - getMinionTokenParam(agressor, "attack");
 					var agressorLife = getMinionTokenParam(agressor, "life") - getMinionTokenParam(target, "attack");				
 
+					var killResult = false;
 					if(targetLife <= 0)
-						killMinionToken(target);
+						killResult = killResult | killMinionToken(target);
 					else
 						setMinionTokenParam(target, targetLifeName, targetLife);
 					
 					if(agressorLife <= 0)
-						killMinionToken(agressor);
+						killResult = killResult | killMinionToken(agressor);
 					else
 						setMinionTokenParam(agressor, "life", agressorLife);		
 					
+					if(!killResult){
 
-				 	$(agressor).animate(
-					 	{
-					 		left : origAgX,
-					 		top  : origAgY	
-					 	}, 500, "easeOutQuint",
-					 	function(){
-					 		$(agressor).removeClass("activeMinionTocken");
-					 		performAction(i + 1);
-					 	});
+					 	$(agressor).animate(
+						 	{
+						 		left : origAgX,
+						 		top  : origAgY	
+						 	}, 500, "easeOutQuint",
+						 	function(){
+						 		$(agressor).removeClass("activeMinionTocken");
+						 		performAction(i + 1);
+						 	});
+				 	}
 
 				 });
 		}			
@@ -1079,9 +1095,26 @@ socket.on("nextRound", function(data) {
 	performAction(0);	
 });
 
+function loominarti(me){
+	spooky.play();
+	$(me).html("<img src='art/illuminati.png' style='width: 50px; height: 50px'/>");
+
+	$(".board").append("<img src='art/illuminati.png' class='illuminati'/>");
+	var luminarti = $(".board .illuminati").last();	
+	
+	$(luminarti).css('transform', 'scale(0,0) translate(0px, 0px)');		
+	$(luminarti).animate({transform: 'scale(3,3) translate(0px, 0px)'}, 7000, "easeOutQuart", function(){
+		$(luminarti).remove();
+	});
+}
+
 socket.on("fireTheActualGame", function(list) {
+	$(".board").html("");
+	$(".player .cards_container").html("");
+
 	var myFinalDeck = [];
-	var myBannedCards = [];
+	var myBannedCards = [];	
+
 
 	for(var i = 0; i < myDeck.length; i++){
 		var banned = false;
@@ -1130,13 +1163,11 @@ socket.on("fireTheActualGame", function(list) {
 	for(var i = 0; i < myBannedCards.length; i++)
 		inflateCard(container, "regular_card", myBannedCards[i]);	
 
-	$(".modal .con").append(message);
-	
-	setActiveManaDisp(totalManaCrist + 1);	
-	setUsedManaCrist(0);
+	$(".modal .con").append(message);	
 
 	setMinionTokenParam($(".player_me"), "life", 30);
 	setMinionTokenParam($(".player_oponent"), "life", 30);
+	
 
 	$(".ready_n_round").addClass("green");
 	$(".ready_n_round").click(readyForNextRound);

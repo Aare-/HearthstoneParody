@@ -208,6 +208,7 @@ io.sockets.on('connection', function(socket) {
 
 	socket.on("gameFinished", function(){
 		thisPlayer.game = null;
+		thisPlayer.myMinions = [];
 	});
 
 	socket.on('disconnect', function(){

@@ -417,6 +417,14 @@ div.minionToken .attack {
 	margin-left: -200px;	
 }
 
+.illuminati {
+	position: fixed;
+	left: 50%;
+	margin-left: -110px;
+	top: 200px;
+	z-index: 999999;
+}
+
 /* MODAL ALERT */
 
 .modal_alert {
