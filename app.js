@@ -45,8 +45,7 @@ var waitingPlayers = [];
 
 // require 
 var path = require('path'),
-	express = require('express'),
-	color = require('colors'),
+	express = require('express'),	
 	app = express(),
 	http = require('http'),
 	server = http.createServer(app),
